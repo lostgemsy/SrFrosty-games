@@ -1,0 +1,1685 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/png" href="png/logo.png">
+    <title>Games — Farius</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700;14..32,800;14..32,900&display=swap" rel="stylesheet">
+    <style>
+        /* ============================================
+           RESET & GLOBAL
+           ============================================ */
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        html, body {
+            width: 100%;
+            min-height: 100%;
+            overflow-x: hidden;
+        }
+
+        body {
+            font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background: #f7f7f7;
+            color: #111;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 24px;
+            background-image:
+                radial-gradient(circle at 25% 15%, rgba(0,0,0,0.015) 0%, transparent 50%),
+                radial-gradient(circle at 75% 85%, rgba(0,0,0,0.015) 0%, transparent 50%),
+                url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120' viewBox='0 0 120 120'%3E%3Cg fill='none' stroke='%23e0e0e0' stroke-width='1.2'%3E%3Cpath d='M0 0h120v120H0z'/%3E%3Cpath d='M60 0v120M0 60h120'/%3E%3Ccircle cx='60' cy='60' r='20'/%3E%3C/g%3E%3C/svg%3E");
+            background-size: 120px 120px;
+            background-attachment: fixed;
+        }
+
+        body.custom-bg {
+            background-image: var(--user-bg) !important;
+            background-size: cover !important;
+            background-position: center !important;
+            background-attachment: fixed !important;
+        }
+
+        /* ============================================
+           LOADING SCREEN
+           ============================================ */
+        #loading-screen {
+            position: fixed;
+            inset: 0;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            background: #f7f7f7;
+            z-index: 9999;
+            transition: opacity 0.7s ease, visibility 0.7s ease;
+        }
+
+        #loading-screen.hidden { opacity: 0; visibility: hidden; pointer-events: none; }
+
+        .dots { display: flex; gap: 14px; margin-bottom: 28px; }
+
+        .dot {
+            width: 14px; height: 14px; background: #111; border-radius: 50%;
+            animation: loadingBounce 1s infinite ease-in-out;
+        }
+
+        .dot:nth-child(2) { animation-delay: 0.18s; }
+        .dot:nth-child(3) { animation-delay: 0.36s; }
+
+        @keyframes loadingBounce {
+            0%, 100% { transform: translateY(0); opacity: 0.15; }
+            50% { transform: translateY(-18px); opacity: 1; }
+        }
+
+        #loading-text { color: #666; font-size: 15px; font-weight: 400; letter-spacing: 2px; }
+
+        /* ============================================
+           TOP NAV
+           ============================================ */
+        .top-nav {
+            width: 100%;
+            max-width: 760px;
+            display: flex;
+            justify-content: center;
+            gap: 12px;
+            margin-bottom: 40px;
+            animation: fadeInUp 0.7s ease-out both;
+        }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            padding: 14px 28px;
+            border-radius: 14px;
+            background: #ffffff;
+            border: 2px solid #e2e2e2;
+            color: #111;
+            text-decoration: none;
+            font-size: 15px;
+            font-weight: 600;
+            transition: all 0.25s cubic-bezier(.2,.8,.2,1);
+            box-shadow: 0 4px 14px rgba(0, 0, 0, 0.04);
+            cursor: pointer;
+        }
+
+        .nav-item:hover {
+            background: #111; border-color: #111; color: #fff;
+            transform: translateY(-3px); box-shadow: 0 12px 28px rgba(0, 0, 0, 0.14);
+        }
+
+        .nav-item[aria-current="page"] { background: #111; border-color: #111; color: #fff; }
+
+        .nav-item img {
+            width: 18px; height: 18px; filter: brightness(0); opacity: 0.7;
+            transition: filter 0.25s ease, opacity 0.25s ease;
+        }
+
+        .nav-item:hover img, .nav-item[aria-current="page"] img {
+            filter: brightness(0) invert(1); opacity: 1;
+        }
+
+        /* ============================================
+           SITE BRAND
+           ============================================ */
+        .site-brand {
+            display: flex; flex-direction: column; align-items: center;
+            text-align: center; margin-bottom: 40px;
+            animation: fadeInUp 0.7s ease-out both;
+        }
+
+        .site-brand strong {
+            font-size: clamp(3rem, 9vw, 5.5rem);
+            font-weight: 900; letter-spacing: -0.06em; color: #111;
+            line-height: 1; margin-bottom: 8px;
+            text-shadow: 0 4px 30px rgba(0, 0, 0, 0.05);
+        }
+
+        .site-brand small {
+            font-size: 0.78rem; font-weight: 600; color: #888;
+            letter-spacing: 0.18em; text-transform: uppercase;
+        }
+
+        /* ============================================
+           MAIN WRAPPER
+           ============================================ */
+        .main-wrapper {
+            width: 100%; max-width: 1200px;
+            display: flex; flex-direction: column; align-items: center;
+            padding: 20px 0 60px;
+            animation: fadeInUp 0.8s ease-out both;
+        }
+
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* ============================================
+           TABS
+           ============================================ */
+        .tabs {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 20px;
+            padding: 6px;
+            background: #ffffff;
+            border: 2px solid #e8e8e8;
+            border-radius: 14px;
+            box-shadow: 0 4px 14px rgba(0, 0, 0, 0.04);
+        }
+
+        .tab {
+            padding: 10px 24px;
+            border: 0;
+            border-radius: 10px;
+            background: transparent;
+            color: #666;
+            font-family: inherit;
+            font-size: 14px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .tab:hover { color: #111; background: #f5f5f5; }
+        .tab.active { background: #111; color: #fff; }
+
+        /* ============================================
+           SEARCH
+           ============================================ */
+        .search-row {
+            width: 100%;
+            max-width: 640px;
+            display: flex;
+            gap: 10px;
+            margin-bottom: 12px;
+        }
+
+        .search-form { flex: 1; position: relative; }
+
+        #gamesearch {
+            width: 100%;
+            height: 64px;
+            padding: 0 32px;
+            border-radius: 18px;
+            outline: none;
+            border: 2px solid #d8d8d8;
+            color: #111;
+            background: #ffffff;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.05);
+            font-family: inherit;
+            font-size: 17px;
+            font-weight: 400;
+            transition: border-color 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        #gamesearch::placeholder { color: #aaa; }
+        #gamesearch:hover { border-color: #b8b8b8; box-shadow: 0 14px 48px rgba(0, 0, 0, 0.08); }
+        #gamesearch:focus {
+            border-color: #111;
+            box-shadow: 0 0 0 5px rgba(0, 0, 0, 0.06), 0 16px 52px rgba(0, 0, 0, 0.1);
+        }
+
+        .bg-btn {
+            flex: none;
+            width: 64px;
+            height: 64px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 2px solid #d8d8d8;
+            border-radius: 18px;
+            background: #ffffff;
+            color: #111;
+            cursor: pointer;
+            transition: all 0.25s cubic-bezier(.2,.8,.2,1);
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.05);
+        }
+
+        .bg-btn:hover {
+            background: #111; border-color: #111; color: #fff;
+            transform: translateY(-3px);
+            box-shadow: 0 14px 48px rgba(0, 0, 0, 0.14);
+        }
+
+        .bg-btn svg {
+            width: 22px; height: 22px;
+            stroke: currentColor; fill: none; stroke-width: 2;
+            stroke-linecap: round; stroke-linejoin: round;
+        }
+
+        .bg-btn.has-custom { background: #111; border-color: #111; color: #fff; }
+
+        /* ============================================
+           COUNT
+           ============================================ */
+        .gl-meta {
+            color: #888;
+            font-size: 0.9rem;
+            font-weight: 500;
+            min-height: 1.3em;
+            margin-bottom: 32px;
+            text-align: center;
+        }
+
+        /* ============================================
+           GAME GRID
+           ============================================ */
+        .gl-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+            gap: 24px;
+            width: 100%;
+            margin-bottom: 40px;
+        }
+
+        .gl-card {
+            display: flex;
+            flex-direction: column;
+            padding: 10px;
+            border-radius: 18px;
+            background: #ffffff;
+            border: 2px solid #e8e8e8;
+            text-decoration: none;
+            color: #111;
+            transition: all 0.3s cubic-bezier(.2,.8,.2,1);
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.04);
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .gl-card::before {
+            content: "";
+            position: absolute;
+            top: 0; left: 0; right: 0;
+            height: 4px;
+            background: #111;
+            transform: scaleX(0);
+            transform-origin: left;
+            transition: transform 0.35s cubic-bezier(.2,.8,.2,1);
+        }
+
+        .gl-card:hover::before { transform: scaleX(1); }
+
+        .gl-card:hover {
+            border-color: #111;
+            transform: translateY(-8px);
+            box-shadow: 0 20px 48px rgba(0, 0, 0, 0.14);
+        }
+
+        .gl-art {
+            position: relative;
+            display: block;
+            aspect-ratio: 1;
+            overflow: hidden;
+            border-radius: 12px;
+            background: #f0f0f0;
+            margin-bottom: 12px;
+        }
+
+        .gl-art img {
+            position: absolute; inset: 0;
+            width: 100%; height: 100%;
+            object-fit: cover;
+            transition: transform 0.35s ease;
+        }
+
+        .gl-card:hover .gl-art img { transform: scale(1.045); }
+
+        .gl-play {
+            position: absolute;
+            left: 10px; right: 10px; bottom: 10px;
+            display: flex; align-items: center; justify-content: center;
+            height: 36px;
+            border-radius: 9px;
+            background: #111;
+            color: #fff;
+            font-weight: 600;
+            font-size: 0.85rem;
+            opacity: 0;
+            transform: translateY(8px);
+            transition: opacity 0.2s ease, transform 0.25s ease;
+        }
+
+        .gl-card:hover .gl-play { opacity: 1; transform: translateY(0); }
+
+        .card-fav {
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            z-index: 3;
+            width: 34px;
+            height: 34px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 0;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.9);
+            color: #111;
+            cursor: pointer;
+            opacity: 0;
+            transform: scale(0.8);
+            transition: all 0.25s ease;
+            backdrop-filter: blur(6px);
+        }
+
+        .gl-card:hover .card-fav { opacity: 1; transform: scale(1); }
+        .card-fav:hover { background: #f1c40f; }
+        .card-fav.active { opacity: 1; transform: scale(1); background: #f1c40f; color: #111; }
+
+        .card-fav svg {
+            width: 16px; height: 16px;
+            stroke: currentColor; fill: none; stroke-width: 2;
+            stroke-linecap: round; stroke-linejoin: round;
+        }
+
+        .card-fav.active svg { fill: currentColor; }
+
+        .gl-card h3 {
+            margin: 0 4px 4px;
+            overflow: hidden;
+            color: #111;
+            font-size: 0.95rem;
+            font-weight: 700;
+            text-align: left;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            letter-spacing: -0.01em;
+        }
+
+        /* ============================================
+           EMPTY STATE
+           ============================================ */
+        .gl-empty {
+            display: flex; flex-direction: column; align-items: center; gap: 16px;
+            padding: 64px 0; color: #888; text-align: center;
+        }
+
+        .gl-empty p { margin: 0; font-size: 1.05rem; }
+
+        .gl-empty a {
+            padding: 12px 24px; border-radius: 12px; background: #111; color: #fff;
+            font-weight: 600; text-decoration: none;
+            transition: background 0.2s ease, transform 0.2s ease;
+        }
+
+        .gl-empty a:hover { background: #333; transform: translateY(-2px); }
+
+        /* ============================================
+           GAME OVERLAY (iframe)
+           ============================================ */
+        .game-overlay {
+            position: fixed;
+            inset: 0;
+            z-index: 9998;
+            background: #111;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s ease, visibility 0.3s ease;
+        }
+
+        .game-overlay.active { opacity: 1; visibility: visible; }
+
+        .game-overlay iframe {
+            width: 100%;
+            height: 100%;
+            border: 0;
+            display: block;
+        }
+
+        /* ============================================
+           BACKGROUND MODAL
+           ============================================ */
+        .bg-modal-backdrop {
+            position: fixed;
+            inset: 0;
+            z-index: 10000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 24px;
+            background: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(8px);
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s ease, visibility 0.3s ease;
+        }
+
+        .bg-modal-backdrop.active { opacity: 1; visibility: visible; }
+
+        .bg-modal {
+            width: 100%;
+            max-width: 520px;
+            padding: 28px;
+            border-radius: 22px;
+            background: #ffffff;
+            border: 2px solid #e8e8e8;
+            box-shadow: 0 30px 80px rgba(0, 0, 0, 0.3);
+            transform: translateY(20px);
+            transition: transform 0.3s cubic-bezier(.2,.8,.2,1);
+        }
+
+        .bg-modal-backdrop.active .bg-modal { transform: translateY(0); }
+
+        .bg-modal h2 {
+            font-size: 1.4rem;
+            font-weight: 800;
+            color: #111;
+            letter-spacing: -0.03em;
+            margin-bottom: 6px;
+        }
+
+        .bg-modal > p {
+            color: #777;
+            font-size: 0.9rem;
+            font-weight: 500;
+            margin-bottom: 20px;
+        }
+
+        .bg-preview {
+            width: 100%;
+            height: 160px;
+            border-radius: 14px;
+            background: #f0f0f0 center / cover no-repeat;
+            border: 2px solid #e0e0e0;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #aaa;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+
+        .bg-preview.has-image { color: transparent; }
+
+        .bg-actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .bg-action {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 12px 20px;
+            border: 2px solid #e0e0e0;
+            border-radius: 12px;
+            background: #fafafa;
+            color: #111;
+            font-family: inherit;
+            font-size: 0.88rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .bg-action:hover {
+            background: #111; border-color: #111; color: #fff;
+            transform: translateY(-2px);
+        }
+
+        .bg-action svg {
+            width: 16px; height: 16px;
+            stroke: currentColor; fill: none; stroke-width: 2;
+            stroke-linecap: round; stroke-linejoin: round;
+        }
+
+        .bg-action input[type="file"] { display: none; }
+
+        .bg-url-row { display: flex; gap: 10px; margin-bottom: 16px; }
+
+        .bg-url-row input {
+            flex: 1;
+            min-width: 0;
+            height: 46px;
+            padding: 0 14px;
+            border: 2px solid #e0e0e0;
+            border-radius: 12px;
+            background: #fafafa;
+            color: #111;
+            font-family: inherit;
+            font-size: 0.9rem;
+            font-weight: 500;
+            outline: none;
+        }
+
+        .bg-url-row input:focus { border-color: #111; background: #fff; }
+
+        .bg-url-row button {
+            padding: 0 20px;
+            border: 2px solid #111;
+            border-radius: 12px;
+            background: #111;
+            color: #fff;
+            font-family: inherit;
+            font-size: 0.88rem;
+            font-weight: 700;
+            cursor: pointer;
+        }
+
+        .bg-url-row button:hover { background: #333; border-color: #333; }
+
+        .bg-modal-footer {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+            padding-top: 8px;
+            border-top: 2px solid #f0f0f0;
+            margin-top: 8px;
+        }
+
+        .bg-cancel,
+        .bg-done {
+            padding: 12px 24px;
+            border-radius: 12px;
+            font-family: inherit;
+            font-size: 0.88rem;
+            font-weight: 700;
+            cursor: pointer;
+        }
+
+        .bg-cancel {
+            background: #fafafa;
+            border: 2px solid #e0e0e0;
+            color: #111;
+        }
+
+        .bg-cancel:hover { background: #f0f0f0; border-color: #ccc; }
+
+        .bg-done {
+            background: #111;
+            border: 2px solid #111;
+            color: #fff;
+        }
+
+        .bg-done:hover { background: #333; border-color: #333; }
+
+        /* ============================================
+           TOAST
+           ============================================ */
+        .toast {
+            position: fixed;
+            left: 50%; bottom: 28px; z-index: 10001;
+            padding: 12px 22px;
+            border: 2px solid #111;
+            border-radius: 14px;
+            background: #111;
+            color: #fff;
+            font-size: 0.9rem;
+            font-weight: 600;
+            opacity: 0;
+            pointer-events: none;
+            transform: translate(-50%, 20px);
+            transition: opacity 0.25s ease, transform 0.35s cubic-bezier(.2,.8,.2,1);
+        }
+
+        .toast.show { opacity: 1; transform: translate(-50%, 0); }
+
+        /* ============================================
+           RESPONSIVE
+           ============================================ */
+        @media (max-width: 720px) {
+            body { padding: 16px; }
+
+            .top-nav { gap: 8px; margin-bottom: 28px; }
+            .nav-item { padding: 10px 16px; font-size: 13px; border-radius: 12px; gap: 6px; }
+            .nav-item img { width: 16px; height: 16px; }
+
+            .site-brand { margin-bottom: 32px; }
+            .site-brand strong { font-size: 2.4rem; }
+            .site-brand small { font-size: 0.68rem; }
+
+            .search-row { gap: 8px; }
+            #gamesearch { height: 56px; padding: 0 22px; font-size: 15px; border-radius: 16px; }
+            .bg-btn { width: 56px; height: 56px; border-radius: 16px; }
+            .bg-btn svg { width: 20px; height: 20px; }
+
+            .gl-meta { margin-bottom: 24px; font-size: 0.82rem; }
+
+            .gl-grid { grid-template-columns: repeat(2, 1fr); gap: 14px; }
+            .gl-card { padding: 8px; border-radius: 14px; }
+            .gl-art { border-radius: 10px; margin-bottom: 8px; }
+            .gl-card h3 { font-size: 0.82rem; margin: 0 2px 2px; }
+            .gl-play { height: 30px; font-size: 0.75rem; border-radius: 7px; left: 6px; right: 6px; bottom: 6px; }
+
+            .tabs { padding: 4px; }
+            .tab { padding: 8px 18px; font-size: 13px; }
+
+            .bg-modal { padding: 22px; border-radius: 18px; }
+        }
+
+        @media (max-width: 480px) {
+            .top-nav { flex-wrap: wrap; }
+            .nav-item { padding: 10px 14px; font-size: 12px; }
+            .site-brand strong { font-size: 2rem; }
+            .gl-grid { gap: 10px; }
+            .gl-card { padding: 6px; border-radius: 12px; }
+            .gl-card h3 { font-size: 0.75rem; }
+            .card-fav { width: 30px; height: 30px; opacity: 1; transform: scale(1); }
+            .card-fav svg { width: 14px; height: 14px; }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after { animation: none !important; transition: none !important; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Loading Screen -->
+    <div id="loading-screen">
+        <div class="dots">
+            <div class="dot"></div>
+            <div class="dot"></div>
+            <div class="dot"></div>
+        </div>
+        <h5 id="loading-text">Loading, please wait...</h5>
+    </div>
+
+    <!-- Top Navigation -->
+    <nav class="top-nav" aria-label="Main navigation">
+        <a href="index.html" class="nav-item" title="Home">
+            <img src="png/house-solid.svg" alt=""> Home
+        </a>
+        <a href="games.html" class="nav-item" title="Games" aria-current="page">
+            <img src="png/gamepad-solid.svg" alt=""> Games
+        </a>
+        <a href="settings.html" class="nav-item" title="Settings">
+            <img src="png/gear-solid.svg" alt=""> Settings
+        </a>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="main-wrapper">
+
+        <header class="site-brand" aria-label="Farius">
+            <strong>Farius</strong>
+            <small>Made by Hohogames</small>
+        </header>
+
+        <div class="tabs" role="tablist">
+            <button class="tab active" data-tab="all" role="tab">All games</button>
+            <button class="tab" data-tab="favorites" role="tab">★ Favorites</button>
+        </div>
+
+        <div class="search-row">
+            <div class="search-form">
+                <input
+                    type="text"
+                    id="gamesearch"
+                    placeholder="Search games..."
+                    autocomplete="off"
+                    spellcheck="false"
+                    aria-label="Search games"
+                >
+            </div>
+            <button class="bg-btn" id="bg-btn" title="Import your own background">
+                <svg viewBox="0 0 24 24">
+                    <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
+                    <circle cx="8.5" cy="8.5" r="1.5"/>
+                    <path d="m21 15-5-5L5 21"/>
+                </svg>
+            </button>
+        </div>
+
+        <p class="gl-meta" id="gl-count" aria-live="polite"></p>
+
+        <!-- Static fallback games (games.js will add more) -->
+        <div class="gl-grid" id="gameGallery">
+
+            <a class="gl-card" href="https://forms.gle/azBWo53JQN8VNzFt5" target="_blank" rel="noopener" data-id="__suggest__">
+                <span class="gl-art">
+                    <img src="/png/games/forms.png" alt="" loading="lazy">
+                    <span class="gl-play">Suggest</span>
+                </span>
+                <h3>Game Suggestions</h3>
+            </a>
+
+            <a class="gl-card" href="games/1" data-id="games/1" data-name="1">
+                <span class="gl-art">
+                    <img src="png/games/12.png" alt="">
+                    <span class="gl-play">Play</span>
+                </span>
+                <h3>1</h3>
+            </a>
+
+            <a class="gl-card" href="games/1v1lol" data-id="games/1v1lol" data-name="1v1.lol">
+                <span class="gl-art">
+                    <img src="png/games/1v1.png" alt="">
+                    <span class="gl-play">Play</span>
+                </span>
+                <h3>1v1.lol</h3>
+            </a>
+
+            <a class="gl-card" href="games/2048" data-id="games/2048" data-name="2048">
+                <span class="gl-art">
+                    <img src="png/games/2048.png" alt="">
+                    <span class="gl-play">Play</span>
+                </span>
+                <h3>2048</h3>
+            </a>
+
+            <a class="gl-card" href="games/ovo" data-id="games/ovo" data-name="OvO">
+                <span class="gl-art">
+                    <img src="/png/games/ovo.png" alt="">
+                    <span class="gl-play">Play</span>
+                </span>
+                <h3>OvO</h3>
+            </a>
+
+            <a class="gl-card" href="games/slope" data-id="games/slope" data-name="Slope">
+                <span class="gl-art">
+                    <img src="png/games/slope.png" alt="">
+                    <span class="gl-play">Play</span>
+                </span>
+                <h3>Slope</h3>
+            </a>
+
+            <a class="gl-card" href="games/retro-bowl" data-id="games/retro-bowl" data-name="Retro Bowl">
+                <span class="gl-art">
+                    <img src="png/games/retro-bowl.png" alt="">
+                    <span class="gl-play">Play</span>
+                </span>
+                <h3>Retro Bowl</h3>
+            </a>
+
+            <a class="gl-card" href="games/sm64" data-id="games/sm64" data-name="SM64">
+                <span class="gl-art">
+                    <img src="png/games/sm64.png" alt="">
+                    <span class="gl-play">Play</span>
+                </span>
+                <h3>SM64</h3>
+            </a>
+
+            <a class="gl-card" href="games/soccer-random" data-id="games/soccer-random" data-name="Soccer Random">
+                <span class="gl-art">
+                    <img src="png/games/soccer.png" alt="">
+                    <span class="gl-play">Play</span>
+                </span>
+                <h3>Soccer Random</h3>
+            </a>
+
+            <a class="gl-card" href="/games/baldis-basics/index.html" data-id="baldis" data-name="Baldis Basics">
+                <span class="gl-art">
+                    <img src="/games/baldis-basics/splash.png" alt="">
+                    <span class="gl-play">Play</span>
+                </span>
+                <h3>Baldis Basics</h3>
+            </a>
+
+            <a class="gl-card" href="games/tiny-fishing" data-id="games/tiny-fishing" data-name="Tiny Fishing">
+                <span class="gl-art">
+                    <img src="png/games/tiny.png" alt="">
+                    <span class="gl-play">Play</span>
+                </span>
+                <h3>Tiny Fishing</h3>
+            </a>
+
+            <a class="gl-card" href="games/worlds-hardest-game" data-id="games/worlds-hardest-game" data-name="Worlds Hardest Game">
+                <span class="gl-art">
+                    <img src="png/games/world.png" alt="">
+                    <span class="gl-play">Play</span>
+                </span>
+                <h3>Worlds Hardest Game</h3>
+            </a>
+
+            <a class="gl-card" href="games/MonkeyMart" data-id="games/MonkeyMart" data-name="Monkey Mart">
+                <span class="gl-art">
+                    <img src="png/games/monkey.png" alt="">
+                    <span class="gl-play">Play</span>
+                </span>
+                <h3>Monkey Mart</h3>
+            </a>
+
+            <a class="gl-card" href="games/idle-breakout" data-id="games/idle-breakout" data-name="Idle Breakout">
+                <span class="gl-art">
+                    <img src="png/games/idle.png" alt="">
+                    <span class="gl-play">Play</span>
+                </span>
+                <h3>Idle Breakout</h3>
+            </a>
+
+            <a class="gl-card" href="games/Rocket-League" data-id="games/Rocket-League" data-name="Rocket League">
+                <span class="gl-art">
+                    <img src="png/games/rocket.png" alt="">
+                    <span class="gl-play">Play</span>
+                </span>
+                <h3>Rocket League</h3>
+            </a>
+
+            <a class="gl-card" href="games/a-dance-of-fire-and-ice" data-id="games/a-dance-of-fire-and-ice" data-name="ADOFAI">
+                <span class="gl-art">
+                    <img src="png/games/adofai.png" alt="">
+                    <span class="gl-play">Play</span>
+                </span>
+                <h3>ADOFAI</h3>
+            </a>
+
+            <a class="gl-card" href="games/basket-random" data-id="games/basket-random" data-name="Basket Random">
+                <span class="gl-art">
+                    <img src="png/games/basket.png" alt="">
+                    <span class="gl-play">Play</span>
+                </span>
+                <h3>Basket Random</h3>
+            </a>
+
+            <a class="gl-card" href="games/bitlife" data-id="games/bitlife" data-name="Bitlife">
+                <span class="gl-art">
+                    <img src="png/games/bit.png" alt="">
+                    <span class="gl-play">Play</span>
+                </span>
+                <h3>Bitlife</h3>
+            </a>
+
+            <a class="gl-card" href="games/bloonstd" data-id="games/bloonstd" data-name="Bloon TD1">
+                <span class="gl-art">
+                    <img src="png/games/bloons.png" alt="">
+                    <span class="gl-play">Play</span>
+                </span>
+                <h3>Bloon TD1</h3>
+            </a>
+
+            <a class="gl-card" href="games/btd5" data-id="games/btd5" data-name="Bloons TD5">
+                <span class="gl-art">
+                    <img src="png/games/bloons5.png" alt="">
+                    <span class="gl-play">Play</span>
+                </span>
+                <h3>Bloons TD5</h3>
+            </a>
+
+            <a class="gl-card" href="games/cookie-clicker" data-id="games/cookie-clicker" data-name="Cookie Clicker">
+                <span class="gl-art">
+                    <img src="png/games/cookie.png" alt="">
+                    <span class="gl-play">Play</span>
+                </span>
+                <h3>Cookie Clicker</h3>
+            </a>
+
+            <a class="gl-card" href="games/eggycar" data-id="games/eggycar" data-name="Eggy Car">
+                <span class="gl-art">
+                    <img src="png/games/eggy-car.png" alt="">
+                    <span class="gl-play">Play</span>
+                </span>
+                <h3>Eggy Car</h3>
+            </a>
+
+            <a class="gl-card" href="games/fnaf/" data-id="games/fnaf" data-name="FNAF">
+                <span class="gl-art">
+                    <img src="png/games/splash.jpg" alt="">
+                    <span class="gl-play">Play</span>
+                </span>
+                <h3>FNAF</h3>
+            </a>
+
+            <a class="gl-card" href="games/ducklife1/" data-id="games/ducklife1" data-name="Duck Life 1">
+                <span class="gl-art">
+                    <img src="png/games/ducklife.png" alt="">
+                    <span class="gl-play">Play</span>
+                </span>
+                <h3>Duck Life 1</h3>
+            </a>
+
+            <a class="gl-card" href="games/rbcollege" data-id="games/rbcollege" data-name="Retro Bowl College">
+                <span class="gl-art">
+                    <img src="png/games/rbc.png" alt="">
+                    <span class="gl-play">Play</span>
+                </span>
+                <h3>Retro Bowl College</h3>
+            </a>
+
+            <a class="gl-card" href="games/csgo-clicker" data-id="games/csgo-clicker" data-name="Csgo Clicker">
+                <span class="gl-art">
+                    <img src="png/games/csgo.png" alt="">
+                    <span class="gl-play">Play</span>
+                </span>
+                <h3>Csgo Clicker</h3>
+            </a>
+
+            <a class="gl-card" href="games/death-run-3d" data-id="games/death-run-3d" data-name="Death Run 3D">
+                <span class="gl-art">
+                    <img src="png/games/death.png" alt="">
+                    <span class="gl-play">Play</span>
+                </span>
+                <h3>Death Run 3D</h3>
+            </a>
+
+            <a class="gl-card" href="games/drift-boss" data-id="games/drift-boss" data-name="Drift Boss">
+                <span class="gl-art">
+                    <img src="png/games/drift.png" alt="">
+                    <span class="gl-play">Play</span>
+                </span>
+                <h3>Drift Boss</h3>
+            </a>
+
+            <a class="gl-card" href="games/drive-mad" data-id="games/drive-mad" data-name="Drive Mad">
+                <span class="gl-art">
+                    <img src="png/games/drive.png" alt="">
+                    <span class="gl-play">Play</span>
+                </span>
+                <h3>Drive Mad</h3>
+            </a>
+
+            <a class="gl-card" href="games/minecraft-15" data-id="games/minecraft-15" data-name="Minecraft 1.5">
+                <span class="gl-art">
+                    <img src="png/games/mine15.png" alt="">
+                    <span class="gl-play">Play</span>
+                </span>
+                <h3>Minecraft 1.5</h3>
+            </a>
+
+            <a class="gl-card" href="games/learntofly" data-id="games/learntofly" data-name="Learn To Fly">
+                <span class="gl-art">
+                    <img src="png/games/learn.png" alt="">
+                    <span class="gl-play">Play</span>
+                </span>
+                <h3>Learn To Fly</h3>
+            </a>
+
+            <a class="gl-card" href="games/minecraft-18" data-id="games/minecraft-18" data-name="Minecraft 1.8">
+                <span class="gl-art">
+                    <img src="png/games/mine18.png" alt="">
+                    <span class="gl-play">Play</span>
+                </span>
+                <h3>Minecraft 1.8</h3>
+            </a>
+
+            <a class="gl-card" href="games/run" data-id="games/run" data-name="Run">
+                <span class="gl-art">
+                    <img src="png/games/run.png" alt="">
+                    <span class="gl-play">Play</span>
+                </span>
+                <h3>Run</h3>
+            </a>
+
+            <a class="gl-card" href="games/drift-hunters" data-id="games/drift-hunters" data-name="Drift Hunter">
+                <span class="gl-art">
+                    <img src="png/games/hunt.png" alt="">
+                    <span class="gl-play">Play</span>
+                </span>
+                <h3>Drift Hunter</h3>
+            </a>
+
+            <a class="gl-card" href="games/osu!" data-id="games/osu" data-name="Osu!">
+                <span class="gl-art">
+                    <img src="/png/games/osu!.png" alt="">
+                    <span class="gl-play">Play</span>
+                </span>
+                <h3>Osu!</h3>
+            </a>
+
+            <a class="gl-card" href="games/stickman-hook" data-id="games/stickman-hook" data-name="Stickman Hook">
+                <span class="gl-art">
+                    <img src="png/games/stickman.png" alt="">
+                    <span class="gl-play">Play</span>
+                </span>
+                <h3>Stickman Hook</h3>
+            </a>
+
+            <a class="gl-card" href="games/riddleschool" data-id="games/riddleschool" data-name="Riddle School">
+                <span class="gl-art">
+                    <img src="png/games/riddle.png" alt="">
+                    <span class="gl-play">Play</span>
+                </span>
+                <h3>Riddle School</h3>
+            </a>
+
+            <a class="gl-card" href="games/subway-surfers/" data-id="games/subway-surfers" data-name="Subway Surfers">
+                <span class="gl-art">
+                    <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRfyjATFe7Qg15j5x1YktUbABxgr6BlbKXKECbj6KH2QzbgKqzw" alt="">
+                    <span class="gl-play">Play</span>
+                </span>
+                <h3>Subway Surfers</h3>
+            </a>
+
+            <a class="gl-card" href="/games/gta3/" data-id="games/gta3" data-name="GTA3">
+                <span class="gl-art">
+                    <img src="/png/games/gta3.png" alt="">
+                    <span class="gl-play">Play</span>
+                </span>
+                <h3>GTA3</h3>
+            </a>
+
+            <a class="gl-card" href="/games/funmayhem/" data-id="games/funmayhem" data-name="Gun Mayhem">
+                <span class="gl-art">
+                    <img src="/games/funmayhem/icon.png" alt="">
+                    <span class="gl-play">Play</span>
+                </span>
+                <h3>Gun Mayhem</h3>
+            </a>
+
+            <a class="gl-card" href="/games/jetpackjoyride/" data-id="games/jetpackjoyride" data-name="Jetpack Joyride">
+                <span class="gl-art">
+                    <img src="/games/jetpackjoyride/logo.jpeg" alt="">
+                    <span class="gl-play">Play</span>
+                </span>
+                <h3>Jetpack Joyride</h3>
+            </a>
+
+            <a class="gl-card" href="/games/pizzatower/" data-id="games/pizzatower" data-name="Pizza Tower">
+                <span class="gl-art">
+                    <img src="/games/pizzatower/pz.png" alt="">
+                    <span class="gl-play">Play</span>
+                </span>
+                <h3>Pizza Tower</h3>
+            </a>
+
+            <a class="gl-card" href="/games/superhot/" data-id="games/superhot" data-name="Superhot">
+                <span class="gl-art">
+                    <img src="/games/superhot/icon.png" alt="">
+                    <span class="gl-play">Play</span>
+                </span>
+                <h3>Superhot</h3>
+            </a>
+
+            <a class="gl-card" href="/games/tetris/" data-id="games/tetris" data-name="Tetris">
+                <span class="gl-art">
+                    <img src="/games/tetris/icon.png" alt="">
+                    <span class="gl-play">Play</span>
+                </span>
+                <h3>Tetris</h3>
+            </a>
+
+            <a class="gl-card" href="/games/theimpossiblequiz/" data-id="games/theimpossiblequiz" data-name="The Impossible Quiz">
+                <span class="gl-art">
+                    <img src="/games/theimpossiblequiz/quiz.png" alt="">
+                    <span class="gl-play">Play</span>
+                </span>
+                <h3>The Impossible Quiz</h3>
+            </a>
+
+            <a class="gl-card" href="/games/tombofthemask/index.html" data-id="games/tombofthemask" data-name="Tomb Of The Mask">
+                <span class="gl-art">
+                    <img src="/games/tombofthemask/cover.svg" alt="">
+                    <span class="gl-play">Play</span>
+                </span>
+                <h3>Tomb Of The Mask</h3>
+            </a>
+
+            <a class="gl-card" href="/games/vex/" data-id="games/vex" data-name="Vex">
+                <span class="gl-art">
+                    <img src="/games/vex/icon.png" alt="">
+                    <span class="gl-play">Play</span>
+                </span>
+                <h3>Vex</h3>
+            </a>
+
+            <a class="gl-card" href="/games/watermelongame/" data-id="games/watermelongame" data-name="Watermelon Game">
+                <span class="gl-art">
+                    <img src="/games/watermelongame/melon.png" alt="">
+                    <span class="gl-play">Play</span>
+                </span>
+                <h3>Watermelon Game</h3>
+            </a>
+
+            <a class="gl-card" href="/games/n-gon/" data-id="games/n-gon" data-name="n-gon">
+                <span class="gl-art">
+                    <img src="/games/n-gon/bot.png" alt="">
+                    <span class="gl-play">Play</span>
+                </span>
+                <h3>n-gon</h3>
+            </a>
+
+            <a class="gl-card" href="/games/getaway-shootout/" data-id="games/getaway-shootout" data-name="Getaway Shootout">
+                <span class="gl-art">
+                    <img src="/games/getaway-shootout/img/index.jpg" alt="">
+                    <span class="gl-play">Play</span>
+                </span>
+                <h3>Getaway Shootout</h3>
+            </a>
+
+            <a class="gl-card" href="/games/fruitninja/" data-id="games/fruitninja" data-name="Fruit Ninja">
+                <span class="gl-art">
+                    <img src="/games/fruitninja/FruitNinjaTeaser.jpg" alt="">
+                    <span class="gl-play">Play</span>
+                </span>
+                <h3>Fruit Ninja</h3>
+            </a>
+
+            <a class="gl-card" href="/games/learntofly2/" data-id="games/learntofly2" data-name="Learn To Fly 2">
+                <span class="gl-art">
+                    <img src="/games/learntofly2/learn-to-fly-2.jpg" alt="">
+                    <span class="gl-play">Play</span>
+                </span>
+                <h3>Learn To Fly 2</h3>
+            </a>
+
+            <a class="gl-card" href="/games/ltf3/" data-id="games/ltf3" data-name="Learn To Fly 3">
+                <span class="gl-art">
+                    <img src="/games/ltf3/logo.png" alt="">
+                    <span class="gl-play">Play</span>
+                </span>
+                <h3>Learn To Fly 3</h3>
+            </a>
+
+            <a class="gl-card" href="/games/motox3m/" data-id="games/motox3m" data-name="Moto X3M">
+                <span class="gl-art">
+                    <img src="/games/motox3m/splash.jpg" alt="">
+                    <span class="gl-play">Play</span>
+                </span>
+                <h3>Moto X3M</h3>
+            </a>
+
+            <a class="gl-card" href="/games/paperio2/" data-id="games/paperio2" data-name="Paperio 2">
+                <span class="gl-art">
+                    <img src="/games/paperio2/paper.png" alt="">
+                    <span class="gl-play">Play</span>
+                </span>
+                <h3>Paperio 2</h3>
+            </a>
+
+            <a class="gl-card" href="/games/pixel-gun-survival/" data-id="games/pixel-gun-survival" data-name="Pixel Gun 3D">
+                <span class="gl-art">
+                    <img src="/games/pixel-gun-survival/512x512.png" alt="">
+                    <span class="gl-play">Play</span>
+                </span>
+                <h3>Pixel Gun 3D</h3>
+            </a>
+
+        </div>
+
+        <!-- Empty State -->
+        <div class="gl-empty" id="gl-empty" hidden>
+            <p>No games match "<span id="gl-term"></span>".</p>
+            <a href="https://forms.gle/azBWo53JQN8VNzFt5" target="_blank" rel="noopener">Suggest this game</a>
+        </div>
+
+    </div>
+
+    <!-- Game Overlay (iframe) -->
+    <div class="game-overlay" id="game-overlay">
+        <iframe id="overlay-frame" src="about:blank" allowfullscreen allow="autoplay; fullscreen; gamepad; clipboard-write"></iframe>
+    </div>
+
+    <!-- Background Modal -->
+    <div class="bg-modal-backdrop" id="bg-modal-backdrop">
+        <div class="bg-modal" role="dialog" aria-modal="true" aria-labelledby="bg-modal-title">
+            <h2 id="bg-modal-title">Custom background</h2>
+            <p>Upload an image or paste a URL. It's saved in your browser.</p>
+
+            <div class="bg-preview" id="bg-preview">No background selected</div>
+
+            <div class="bg-actions">
+                <label class="bg-action">
+                    <svg viewBox="0 0 24 24">
+                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                        <path d="M17 8l-5-5-5 5"/>
+                        <path d="M12 3v12"/>
+                    </svg>
+                    Upload image
+                    <input type="file" id="bg-file" accept="image/*">
+                </label>
+                <button class="bg-action" id="bg-reset">
+                    <svg viewBox="0 0 24 24">
+                        <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/>
+                        <path d="M3 3v5h5"/>
+                    </svg>
+                    Reset to default
+                </button>
+            </div>
+
+            <div class="bg-url-row">
+                <input type="text" id="bg-url" placeholder="https://example.com/image.jpg" spellcheck="false">
+                <button id="bg-url-apply">Use URL</button>
+            </div>
+
+            <div class="bg-modal-footer">
+                <button class="bg-cancel" id="bg-cancel">Cancel</button>
+                <button class="bg-done" id="bg-done">Done</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast -->
+    <div class="toast" id="toast"></div>
+
+    <!-- Loading Script -->
+    <script src="/loading.js"></script>
+
+    <!-- Loading Screen Handler -->
+    <script>
+        (function() {
+            const loadingScreen = document.getElementById('loading-screen');
+            if (loadingScreen) {
+                setTimeout(() => {
+                    loadingScreen.classList.add('hidden');
+                }, 700);
+            }
+        })();
+    </script>
+
+    <!-- ============================================
+         GAMES.JS — loads the rest of your 300 games
+         ============================================ -->
+    <script src="/games.js"></script>
+
+    <!-- ============================================
+         MAIN SCRIPT — runs AFTER games.js
+         ============================================ -->
+    <script>
+        (function () {
+            "use strict";
+
+            /* ============================================
+               STORAGE
+            ============================================ */
+            var FAV_KEY = "farius-favorites";
+            var BG_KEY = "farius-background";
+
+            function getFavorites() {
+                try { return JSON.parse(localStorage.getItem(FAV_KEY) || "[]"); }
+                catch (e) { return []; }
+            }
+
+            function saveFavorites(list) {
+                try { localStorage.setItem(FAV_KEY, JSON.stringify(list)); } catch (e) {}
+            }
+
+            function isFavorite(id) { return getFavorites().indexOf(id) > -1; }
+
+            function toggleFavorite(id) {
+                var list = getFavorites();
+                var idx = list.indexOf(id);
+                if (idx > -1) list.splice(idx, 1);
+                else list.push(id);
+                saveFavorites(list);
+                return idx === -1;
+            }
+
+            /* ============================================
+               ELEMENTS
+            ============================================ */
+            var input = document.getElementById("gamesearch");
+            var count = document.getElementById("gl-count");
+            var empty = document.getElementById("gl-empty");
+            var term = document.getElementById("gl-term");
+            var grid = document.getElementById("gameGallery");
+            var toastEl = document.getElementById("toast");
+            var overlay = document.getElementById("game-overlay");
+            var overlayFrame = document.getElementById("overlay-frame");
+            var bgBtn = document.getElementById("bg-btn");
+            var bgBackdrop = document.getElementById("bg-modal-backdrop");
+            var bgPreview = document.getElementById("bg-preview");
+            var bgFile = document.getElementById("bg-file");
+            var bgReset = document.getElementById("bg-reset");
+            var bgUrl = document.getElementById("bg-url");
+            var bgUrlApply = document.getElementById("bg-url-apply");
+            var bgCancel = document.getElementById("bg-cancel");
+            var bgDone = document.getElementById("bg-done");
+            var tabs = document.querySelectorAll(".tab");
+
+            var activeTab = "all";
+            var pendingBg = null;
+            var cards = [];
+            var cardData = [];
+
+            /* ============================================
+               TOAST
+            ============================================ */
+            var toastTimer;
+            function toast(msg) {
+                toastEl.textContent = msg;
+                toastEl.classList.add("show");
+                clearTimeout(toastTimer);
+                toastTimer = setTimeout(function () {
+                    toastEl.classList.remove("show");
+                }, 1700);
+            }
+
+            /* ============================================
+               BACKGROUND
+            ============================================ */
+            function getSavedBg() {
+                try { return localStorage.getItem(BG_KEY) || ""; }
+                catch (e) { return ""; }
+            }
+
+            function setSavedBg(value) {
+                try {
+                    if (value) localStorage.setItem(BG_KEY, value);
+                    else localStorage.removeItem(BG_KEY);
+                } catch (e) {}
+            }
+
+            function applyBg(value) {
+                if (value) {
+                    document.body.classList.add("custom-bg");
+                    document.body.style.setProperty("--user-bg", 'url("' + value + '")');
+                    bgBtn.classList.add("has-custom");
+                } else {
+                    document.body.classList.remove("custom-bg");
+                    document.body.style.removeProperty("--user-bg");
+                    bgBtn.classList.remove("has-custom");
+                }
+            }
+
+            var savedBg = getSavedBg();
+            if (savedBg) applyBg(savedBg);
+
+            /* ============================================
+               FAVORITE STAR ON CARD
+            ============================================ */
+            function createFavButton(card, id) {
+                var btn = document.createElement("button");
+                btn.type = "button";
+                btn.className = "card-fav";
+                btn.title = "Favorite";
+                btn.innerHTML = '<svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>';
+                if (isFavorite(id)) btn.classList.add("active");
+
+                btn.addEventListener("click", function (e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    var added = toggleFavorite(id);
+                    btn.classList.toggle("active", added);
+                    toast(added ? "Added to favorites" : "Removed from favorites");
+                });
+
+                return btn;
+            }
+
+            /* ============================================
+               SCAN THE GRID (after games.js has run)
+            ============================================ */
+            function scanGrid() {
+                cards = Array.prototype.slice.call(grid.children);
+                cardData = [];
+
+                cards.forEach(function (card) {
+                    // Add data-id if missing
+                    var id = card.getAttribute("data-id");
+                    var name = card.getAttribute("data-name");
+                    var h3 = card.querySelector("h3");
+
+                    if (!id) {
+                        id = card.getAttribute("href") || "";
+                        card.setAttribute("data-id", id);
+                    }
+                    if (!name && h3) {
+                        name = h3.textContent;
+                        card.setAttribute("data-name", name);
+                    }
+
+                    var isSuggest = id === "__suggest__";
+
+                    cardData.push({ card: card, id: id, name: name || "", isSuggest: isSuggest });
+
+                    // Add favorite star if not already added and not the suggest card
+                    if (!isSuggest && !card.querySelector(".card-fav")) {
+                        card.appendChild(createFavButton(card, id));
+                    }
+                });
+            }
+
+            /* ============================================
+               OPEN GAME OVERLAY
+            ============================================ */
+            function openGame(url, name, id) {
+                var params = new URLSearchParams();
+                params.set("url", url);
+                params.set("name", name);
+                params.set("id", id);
+
+                overlayFrame.src = "game.html?" + params.toString();
+                overlay.classList.add("active");
+                document.body.style.overflow = "hidden";
+            }
+
+            function closeGame() {
+                overlay.classList.remove("active");
+                overlayFrame.src = "about:blank";
+                document.body.style.overflow = "";
+            }
+
+            window.addEventListener("message", function (e) {
+                if (e.data && e.data.type === "farius-close-game") {
+                    closeGame();
+                }
+                if (e.data && e.data.type === "farius-favorite-change") {
+                    var id = e.data.id;
+                    cards.forEach(function (c) {
+                        if (c.getAttribute("data-id") === id) {
+                            var star = c.querySelector(".card-fav");
+                            if (star) star.classList.toggle("active", e.data.favorited);
+                        }
+                    });
+                }
+            });
+
+            /* ============================================
+               CARD CLICK -> IFRAME OVERLAY
+               Uses event delegation so it works for
+               games added later by games.js too
+            ============================================ */
+            grid.addEventListener("click", function (e) {
+                var card = e.target.closest(".gl-card");
+                if (!card) return;
+
+                // Let the suggest card behave normally
+                var id = card.getAttribute("data-id") || card.getAttribute("href") || "";
+                if (id === "__suggest__") return;
+
+                // Don't intercept if favorite star was clicked
+                if (e.target.closest(".card-fav")) return;
+
+                e.preventDefault();
+
+                var url = card.getAttribute("href") || "";
+                var name = card.getAttribute("data-name") ||
+                           (card.querySelector("h3") ? card.querySelector("h3").textContent : "Game");
+                if (!url) return;
+
+                openGame(url, name, id);
+            });
+
+            document.addEventListener("keydown", function (e) {
+                if (e.key === "Escape" && overlay.classList.contains("active")) {
+                    closeGame();
+                }
+            });
+
+            /* ============================================
+               TABS
+            ============================================ */
+            tabs.forEach(function (tab) {
+                tab.addEventListener("click", function () {
+                    tabs.forEach(function (t) { t.classList.remove("active"); });
+                    tab.classList.add("active");
+                    activeTab = tab.getAttribute("data-tab");
+                    searchGames();
+                });
+            });
+
+            /* ============================================
+               SEARCH + FILTER
+            ============================================ */
+            function searchGames() {
+                var q = input.value.trim().toLowerCase();
+                var shown = 0;
+
+                cardData.forEach(function (data) {
+                    var card = data.card;
+                    var name = data.name.toLowerCase();
+
+                    var matchSearch = !q || name.indexOf(q) !== -1;
+                    var matchTab = true;
+                    if (activeTab === "favorites") {
+                        matchTab = isFavorite(data.id);
+                    }
+
+                    var show = matchSearch && matchTab;
+                    card.style.display = show ? "" : "none";
+                    if (show) shown++;
+                });
+
+                if (empty) empty.hidden = shown > 0;
+                if (term) term.textContent = input.value.trim();
+                if (count) {
+                    var total = cardData.length;
+                    if (activeTab === "favorites") {
+                        count.textContent = shown + " favorite" + (shown === 1 ? "" : "s");
+                    } else if (q) {
+                        count.textContent = shown + " of " + total + " games";
+                    } else {
+                        count.textContent = total + " games";
+                    }
+                }
+            }
+
+            input.addEventListener("input", searchGames);
+
+            document.addEventListener("keydown", function (e) {
+                var tag = (e.target.tagName || "").toLowerCase();
+                if (e.key === "/" && tag !== "input" && tag !== "textarea" && !e.ctrlKey && !e.metaKey) {
+                    if (overlay.classList.contains("active")) return;
+                    e.preventDefault();
+                    input.focus();
+                }
+            });
+
+            var params = new URLSearchParams(window.location.search);
+            var qParam = params.get("q");
+            if (qParam) {
+                input.value = qParam;
+                window.history.replaceState({}, document.title, location.pathname);
+            }
+
+            /* ============================================
+               BACKGROUND MODAL
+            ============================================ */
+            function openBgModal() {
+                pendingBg = getSavedBg();
+                updatePreview();
+                bgBackdrop.classList.add("active");
+                bgUrl.value = "";
+            }
+
+            function closeBgModal() {
+                bgBackdrop.classList.remove("active");
+                pendingBg = null;
+            }
+
+            function updatePreview() {
+                if (pendingBg) {
+                    bgPreview.classList.add("has-image");
+                    bgPreview.style.backgroundImage = 'url("' + pendingBg + '")';
+                    bgPreview.textContent = "";
+                } else {
+                    bgPreview.classList.remove("has-image");
+                    bgPreview.style.backgroundImage = "";
+                    bgPreview.textContent = "No background selected";
+                }
+            }
+
+            bgBtn.addEventListener("click", openBgModal);
+            bgCancel.addEventListener("click", closeBgModal);
+            bgBackdrop.addEventListener("click", function (e) {
+                if (e.target === bgBackdrop) closeBgModal();
+            });
+
+            bgFile.addEventListener("change", function () {
+                var file = this.files && this.files[0];
+                if (!file) return;
+                if (!file.type.startsWith("image/")) {
+                    toast("Please pick an image file");
+                    return;
+                }
+                var reader = new FileReader();
+                reader.onload = function (e) {
+                    pendingBg = e.target.result;
+                    updatePreview();
+                };
+                reader.readAsDataURL(file);
+            });
+
+            bgUrlApply.addEventListener("click", function () {
+                var v = bgUrl.value.trim();
+                if (!v) return;
+                pendingBg = v;
+                updatePreview();
+            });
+
+            bgReset.addEventListener("click", function () {
+                pendingBg = null;
+                updatePreview();
+            });
+
+            bgDone.addEventListener("click", function () {
+                if (pendingBg) {
+                    setSavedBg(pendingBg);
+                    applyBg(pendingBg);
+                    toast("Background saved");
+                } else {
+                    setSavedBg("");
+                    applyBg("");
+                    toast("Background reset");
+                }
+                closeBgModal();
+            });
+
+            /* ============================================
+               INIT — wait for games.js to finish
+               games.js may add cards synchronously or async.
+               We poll for grid stability, then scan.
+            ============================================ */
+            function waitForGamesJs() {
+                // If games.js has finished and grid stops growing, scan.
+                var lastCount = -1;
+                var stableFrames = 0;
+                var maxWait = 5000; // 5 seconds max
+                var start = Date.now();
+
+                function check() {
+                    var current = grid.children.length;
+                    if (current === lastCount) {
+                        stableFrames++;
+                    } else {
+                        stableFrames = 0;
+                        lastCount = current;
+                    }
+
+                    // Scan and rebind once grid is stable for 3 checks (~300ms)
+                    // or if we've waited too long.
+                    if (stableFrames >= 3 || Date.now() - start > maxWait) {
+                        scanGrid();
+                        searchGames();
+                        return;
+                    }
+
+                    requestAnimationFrame(function () {
+                        setTimeout(check, 100);
+                    });
+                }
+
+                check();
+            }
+
+            // Initial scan of the static cards
+            scanGrid();
+            searchGames();
+
+            // Poll for games.js additions
+            waitForGamesJs();
+
+            // Also re-scan if games.js fires a load event
+            window.addEventListener("load", function () {
+                setTimeout(function () {
+                    scanGrid();
+                    searchGames();
+                }, 200);
+            });
+
+        })();
+    </script>
+
+</body>
+</html>

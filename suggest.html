@@ -1,0 +1,1058 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="icon" type="image/png" href="png/logo.png">
+<title>Suggest a Game — Farius</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700;14..32,800;14..32,900&display=swap" rel="stylesheet">
+<style>
+/* ============================================
+   RESET & GLOBAL
+   ============================================ */
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+html, body {
+    width: 100%;
+    min-height: 100%;
+    overflow-x: hidden;
+}
+
+body {
+    font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    background: #f7f7f7;
+    color: #111;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 24px;
+    background-image:
+        radial-gradient(circle at 25% 15%, rgba(0,0,0,0.015) 0%, transparent 50%),
+        radial-gradient(circle at 75% 85%, rgba(0,0,0,0.015) 0%, transparent 50%),
+        url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120' viewBox='0 0 120 120'%3E%3Cg fill='none' stroke='%23e0e0e0' stroke-width='1.2'%3E%3Cpath d='M0 0h120v120H0z'/%3E%3Cpath d='M60 0v120M0 60h120'/%3E%3Ccircle cx='60' cy='60' r='20'/%3E%3C/g%3E%3C/svg%3E");
+    background-size: 120px 120px;
+    background-attachment: fixed;
+}
+
+/* ============================================
+   LOADING SCREEN
+   ============================================ */
+#loading-screen {
+    position: fixed;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    background: #f7f7f7;
+    z-index: 99999;
+    transition: opacity 0.7s ease, visibility 0.7s ease;
+}
+
+#loading-screen.hidden {
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+}
+
+.dots { display: flex; gap: 14px; margin-bottom: 28px; }
+
+.dot {
+    width: 14px; height: 14px;
+    background: #111; border-radius: 50%;
+    animation: loadingBounce 1s infinite ease-in-out;
+}
+.dot:nth-child(2) { animation-delay: 0.18s; }
+.dot:nth-child(3) { animation-delay: 0.36s; }
+
+@keyframes loadingBounce {
+    0%, 100% { transform: translateY(0); opacity: 0.15; }
+    50% { transform: translateY(-18px); opacity: 1; }
+}
+
+#loading-text {
+    color: #666;
+    font-size: 15px;
+    font-weight: 400;
+    letter-spacing: 2px;
+}
+
+/* ============================================
+   TOP NAV
+   ============================================ */
+.top-nav {
+    width: 100%;
+    max-width: 760px;
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-bottom: 40px;
+    animation: fadeInUp 0.7s ease-out both;
+}
+
+.nav-item {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    padding: 14px 28px;
+    border-radius: 14px;
+    background: #ffffff;
+    border: 2px solid #e2e2e2;
+    color: #111;
+    text-decoration: none;
+    font-size: 15px;
+    font-weight: 600;
+    transition: all 0.25s cubic-bezier(.2,.8,.2,1);
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.04);
+    cursor: pointer;
+}
+
+.nav-item:hover {
+    background: #111;
+    border-color: #111;
+    color: #fff;
+    transform: translateY(-3px);
+    box-shadow: 0 12px 28px rgba(0, 0, 0, 0.14);
+}
+
+.nav-item:active { transform: translateY(-1px); }
+
+.nav-item[aria-current="page"] {
+    background: #111;
+    border-color: #111;
+    color: #fff;
+}
+
+.nav-item img {
+    width: 18px;
+    height: 18px;
+    filter: brightness(0);
+    opacity: 0.7;
+    transition: filter 0.25s ease, opacity 0.25s ease;
+}
+
+.nav-item:hover img,
+.nav-item[aria-current="page"] img {
+    filter: brightness(0) invert(1);
+    opacity: 1;
+}
+
+/* ============================================
+   MAIN WRAPPER
+   ============================================ */
+.main-wrapper {
+    width: 100%;
+    max-width: 680px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 0 0 60px;
+    animation: fadeInUp 0.8s 0.1s ease-out both;
+}
+
+@keyframes fadeInUp {
+    from { opacity: 0; transform: translateY(30px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* ============================================
+   HEADER
+   ============================================ */
+.page-header {
+    width: 100%;
+    text-align: center;
+    margin-bottom: 32px;
+}
+
+.page-header h1 {
+    font-size: clamp(2rem, 5vw, 2.8rem);
+    font-weight: 900;
+    letter-spacing: -0.05em;
+    color: #111;
+    margin-bottom: 10px;
+}
+
+.page-header p {
+    font-size: 0.98rem;
+    color: #666;
+    font-weight: 500;
+    line-height: 1.6;
+    max-width: 480px;
+    margin: 0 auto;
+}
+
+/* ============================================
+   FORM CARD
+   ============================================ */
+.form-card {
+    width: 100%;
+    padding: 32px;
+    border-radius: 22px;
+    background: #ffffff;
+    border: 2px solid #e8e8e8;
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.06);
+    margin-bottom: 24px;
+    transition: opacity 0.3s ease;
+}
+
+.form-card.locked {
+    opacity: 0.55;
+    pointer-events: none;
+}
+
+.field {
+    margin-bottom: 20px;
+}
+
+.field:last-of-type { margin-bottom: 24px; }
+
+.field label {
+    display: block;
+    font-size: 13px;
+    font-weight: 800;
+    color: #111;
+    margin-bottom: 8px;
+    letter-spacing: 0.02em;
+}
+
+.field label .required {
+    color: #c0392b;
+    margin-left: 2px;
+}
+
+.field .hint {
+    display: block;
+    font-size: 11.5px;
+    color: #999;
+    font-weight: 500;
+    margin-bottom: 8px;
+    margin-top: -4px;
+}
+
+.field input[type="text"],
+.field input[type="url"],
+.field textarea,
+.field select {
+    width: 100%;
+    padding: 14px 18px;
+    border-radius: 14px;
+    border: 2px solid #e0e0e0;
+    background: #fafafa;
+    color: #111;
+    font-family: inherit;
+    font-size: 15px;
+    font-weight: 500;
+    outline: none;
+    transition: border-color 0.25s ease, background 0.25s ease, box-shadow 0.25s ease;
+}
+
+.field textarea {
+    resize: vertical;
+    min-height: 100px;
+    line-height: 1.5;
+}
+
+.field select {
+    cursor: pointer;
+    appearance: none;
+    -webkit-appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%23888' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 18px center;
+    padding-right: 44px;
+}
+
+.field input:focus,
+.field textarea:focus,
+.field select:focus {
+    border-color: #111;
+    background: #fff;
+    box-shadow: 0 0 0 4px rgba(0, 0, 0, 0.06);
+}
+
+.field input::placeholder,
+.field textarea::placeholder {
+    color: #aaa;
+    font-weight: 400;
+}
+
+/* URL preview */
+.url-preview {
+    display: none;
+    margin-top: 10px;
+    padding: 10px 14px;
+    border-radius: 10px;
+    background: #f5f5f5;
+    border: 2px solid #ececec;
+    color: #555;
+    font-size: 12px;
+    font-weight: 600;
+    word-break: break-all;
+    animation: fadeIn 0.25s ease;
+}
+
+.url-preview.show { display: block; }
+
+.url-preview .label {
+    color: #999;
+    font-weight: 700;
+    margin-right: 6px;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-4px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* Submit */
+.submit-btn {
+    width: 100%;
+    height: 58px;
+    border: 2px solid #111;
+    border-radius: 14px;
+    background: #111;
+    color: #fff;
+    font-family: inherit;
+    font-size: 15px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.25s cubic-bezier(.2,.8,.2,1);
+    position: relative;
+    overflow: hidden;
+}
+
+.submit-btn:hover:not(:disabled) {
+    background: #333;
+    border-color: #333;
+    transform: translateY(-2px);
+    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.18);
+}
+
+.submit-btn:active:not(:disabled) { transform: translateY(0); }
+
+.submit-btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none;
+}
+
+.submit-btn .spinner-inline {
+    display: inline-block;
+    width: 16px;
+    height: 16px;
+    border: 2.5px solid rgba(255, 255, 255, 0.35);
+    border-top-color: #fff;
+    border-radius: 50%;
+    animation: spin 0.7s linear infinite;
+    vertical-align: -3px;
+    margin-right: 10px;
+}
+
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* ============================================
+   STATUS MESSAGES
+   ============================================ */
+.status-msg {
+    display: none;
+    padding: 14px 18px;
+    border-radius: 14px;
+    font-size: 13.5px;
+    font-weight: 600;
+    margin-bottom: 20px;
+    text-align: center;
+    animation: fadeInUp 0.35s ease both;
+    line-height: 1.55;
+}
+
+.status-msg.show { display: block; }
+
+.status-msg.success {
+    background: #eaf7f0;
+    border: 2px solid #b9e6ce;
+    color: #27764c;
+}
+
+.status-msg.error {
+    background: #fff0f0;
+    border: 2px solid #ffd4d4;
+    color: #c0392b;
+}
+
+.status-msg.warn {
+    background: #fff8e0;
+    border: 2px solid #ffe4a3;
+    color: #b8860b;
+}
+
+.status-msg .countdown {
+    display: inline-block;
+    margin-left: 6px;
+    padding: 2px 9px;
+    border-radius: 999px;
+    background: rgba(0, 0, 0, 0.08);
+    font-family: "SF Mono", "Fira Code", monospace;
+    font-size: 12px;
+    font-weight: 800;
+    letter-spacing: 0.02em;
+}
+
+/* ============================================
+   INFO PANEL
+   ============================================ */
+.info-panel {
+    width: 100%;
+    padding: 20px 24px;
+    border-radius: 18px;
+    background: rgba(255, 255, 255, 0.85);
+    border: 2px solid #e8e8e8;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.04);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+}
+
+.info-panel h3 {
+    font-size: 0.82rem;
+    font-weight: 800;
+    color: #111;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    margin-bottom: 12px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.info-panel h3::before {
+    content: "";
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #111;
+}
+
+.info-panel ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.info-panel li {
+    position: relative;
+    padding-left: 20px;
+    margin-bottom: 8px;
+    color: #555;
+    font-size: 0.88rem;
+    font-weight: 500;
+    line-height: 1.55;
+}
+
+.info-panel li:last-child { margin-bottom: 0; }
+
+.info-panel li::before {
+    content: "→";
+    position: absolute;
+    left: 0;
+    top: 0;
+    color: #999;
+    font-weight: 700;
+}
+
+/* ============================================
+   RESPONSIVE
+   ============================================ */
+@media (max-width: 720px) {
+    body { padding: 16px; }
+
+    .top-nav { gap: 8px; margin-bottom: 28px; }
+    .nav-item { padding: 10px 16px; font-size: 13px; border-radius: 12px; gap: 6px; }
+    .nav-item img { width: 16px; height: 16px; }
+
+    .page-header h1 { font-size: 1.9rem; }
+    .page-header p { font-size: 0.9rem; }
+
+    .form-card { padding: 22px 18px; border-radius: 18px; }
+
+    .field input,
+    .field textarea,
+    .field select {
+        padding: 12px 16px;
+        font-size: 14px;
+        border-radius: 12px;
+    }
+
+    .submit-btn { height: 54px; font-size: 14px; border-radius: 12px; }
+
+    .info-panel { padding: 16px 18px; border-radius: 15px; }
+    .info-panel li { font-size: 0.84rem; }
+}
+
+@media (max-width: 480px) {
+    .top-nav { flex-wrap: wrap; }
+    .nav-item { padding: 10px 14px; font-size: 12px; }
+
+    .page-header h1 { font-size: 1.6rem; }
+    .form-card { padding: 18px 14px; }
+}
+</style>
+</head>
+<body>
+
+<!-- Loading Screen -->
+<div id="loading-screen">
+    <div class="dots">
+        <div class="dot"></div>
+        <div class="dot"></div>
+        <div class="dot"></div>
+    </div>
+    <h5 id="loading-text">Loading...</h5>
+</div>
+
+<!-- Top Nav -->
+<nav class="top-nav" aria-label="Main navigation">
+    <a href="index.html" class="nav-item" title="Home">
+        <img src="png/house-solid.svg" alt="" onerror="this.style.display='none'"> Home
+    </a>
+    <a href="games.html" class="nav-item" title="Games">
+        <img src="png/gamepad-solid.svg" alt="" onerror="this.style.display='none'"> Games
+    </a>
+    <a href="chat.html" class="nav-item" title="Chat">
+        <img src="png/comment-solid.svg" alt="" onerror="this.style.display='none'"> Chat
+    </a>
+    <a href="suggest.html" class="nav-item" title="Suggest" aria-current="page">
+        <img src="suggest.png" alt="" onerror="this.style.display='none'"> Suggest
+    </a>
+    <a href="settings.html" class="nav-item" title="Settings">
+        <img src="png/gear-solid.svg" alt="" onerror="this.style.display='none'"> Settings
+    </a>
+</nav>
+
+<!-- Main -->
+<div class="main-wrapper">
+
+    <div class="page-header">
+        <h1>Suggest a Game</h1>
+        <p>
+            Found a game you want on Farius? Fill out the form below and it'll be
+            reviewed. Approved games show up in the <strong>New Added</strong>
+            section on the Games page.
+        </p>
+    </div>
+
+    <div class="form-card" id="formCard">
+
+        <div class="status-msg" id="statusMsg"></div>
+
+        <form id="suggestForm" novalidate>
+
+            <div class="field">
+                <label for="gameName">
+                    Game name <span class="required">*</span>
+                </label>
+                <input
+                    type="text"
+                    id="gameName"
+                    name="gameName"
+                    placeholder="e.g. Slope"
+                    maxlength="60"
+                    required
+                    autocomplete="off"
+                >
+            </div>
+
+            <div class="field">
+                <label for="gameLink">
+                    Game link <span class="required">*</span>
+                </label>
+                <span class="hint">Direct link to the game (must start with http:// or https://)</span>
+                <input
+                    type="url"
+                    id="gameLink"
+                    name="gameLink"
+                    placeholder="https://example.com/game"
+                    required
+                    autocomplete="off"
+                    spellcheck="false"
+                >
+                <div class="url-preview" id="urlPreview">
+                    <span class="label">Preview:</span><span id="urlPreviewText"></span>
+                </div>
+            </div>
+
+            <div class="field">
+                <label for="gameCategory">
+                    Category <span class="required">*</span>
+                </label>
+                <select id="gameCategory" name="gameCategory" required>
+                    <option value="" disabled selected>Select a category...</option>
+                    <option value="Action">Action</option>
+                    <option value="Adventure">Adventure</option>
+                    <option value="Arcade">Arcade</option>
+                    <option value="Casual">Casual</option>
+                    <option value="Clicker">Clicker / Idle</option>
+                    <option value="Fighting">Fighting</option>
+                    <option value="Horror">Horror</option>
+                    <option value="Multiplayer">Multiplayer</option>
+                    <option value="Platformer">Platformer</option>
+                    <option value="Puzzle">Puzzle</option>
+                    <option value="Racing">Racing</option>
+                    <option value="Retro">Retro</option>
+                    <option value="RPG">RPG</option>
+                    <option value="Runner">Runner</option>
+                    <option value="Sandbox">Sandbox</option>
+                    <option value="Shooter">Shooter</option>
+                    <option value="Simulation">Simulation</option>
+                    <option value="Sports">Sports</option>
+                    <option value="Strategy">Strategy</option>
+                    <option value="Survival">Survival</option>
+                    <option value="Other">Other</option>
+                </select>
+            </div>
+
+            <div class="field">
+                <label for="gameDescription">
+                    Short description <span style="color:#999;font-weight:600;">(optional)</span>
+                </label>
+                <textarea
+                    id="gameDescription"
+                    name="gameDescription"
+                    placeholder="Tell us a little about the game — why it's fun, what you do, etc."
+                    maxlength="300"
+                ></textarea>
+            </div>
+
+            <div class="field">
+                <label for="yourName">
+                    Your name <span style="color:#999;font-weight:600;">(optional)</span>
+                </label>
+                <span class="hint">So we can credit you and remember you on your next visit</span>
+                <input
+                    type="text"
+                    id="yourName"
+                    name="yourName"
+                    placeholder="Anonymous"
+                    maxlength="40"
+                    autocomplete="off"
+                >
+            </div>
+
+            <button type="submit" class="submit-btn" id="submitBtn">
+                Submit suggestion
+            </button>
+
+        </form>
+    </div>
+
+    <div class="info-panel">
+        <h3>Before you submit</h3>
+        <ul>
+            <li>Make sure the game link is direct and works in a browser</li>
+            <li>Pick the closest category — you don't need to be perfect</li>
+            <li>Only suggest one game per submission</li>
+            <li>20 minute cooldown between submissions</li>
+            <li>Games that need downloads or installs won't be accepted</li>
+            <li>Approved games appear in the "New Added" row on the Games page</li>
+        </ul>
+    </div>
+
+</div>
+
+<!-- Loading Script -->
+<script src="/loading.js"></script>
+<script>
+    (function() {
+        const loadingScreen = document.getElementById('loading-screen');
+        if (loadingScreen) {
+            setTimeout(() => {
+                loadingScreen.classList.add('hidden');
+            }, 700);
+        }
+    })();
+</script>
+
+<!-- ============================================
+     SUGGEST FORM LOGIC
+     ============================================ -->
+<script>
+(function () {
+    "use strict";
+
+    const FORM_ENDPOINT = "/api/suggest";
+    const STATUS_ENDPOINT = "/api/suggest/status";
+    const WARNINGS_ENDPOINT = "/api/suggest/warnings";
+
+    // ---------- Persistent identity ----------
+    const NAME_KEY = "farius_suggest_name";
+
+    function loadSavedName() {
+        try {
+            const saved = localStorage.getItem(NAME_KEY);
+            if (saved) return saved;
+        } catch {}
+        // Fallback: chat username if logged in
+        try {
+            const raw = localStorage.getItem("farius_user");
+            if (raw) {
+                const u = JSON.parse(raw);
+                if (u && u.username) return u.username;
+            }
+        } catch {}
+        return "";
+    }
+
+    function saveName(name) {
+        try {
+            if (name) localStorage.setItem(NAME_KEY, name);
+            else localStorage.removeItem(NAME_KEY);
+        } catch {}
+    }
+
+    const form = document.getElementById("suggestForm");
+    const formCard = document.getElementById("formCard");
+    const gameName = document.getElementById("gameName");
+    const gameLink = document.getElementById("gameLink");
+    const gameCategory = document.getElementById("gameCategory");
+    const gameDescription = document.getElementById("gameDescription");
+    const yourName = document.getElementById("yourName");
+    const submitBtn = document.getElementById("submitBtn");
+    const statusMsg = document.getElementById("statusMsg");
+    const urlPreview = document.getElementById("urlPreview");
+    const urlPreviewText = document.getElementById("urlPreviewText");
+
+    let cooldownTimer = null;
+    let nameCheckTimer = null;
+
+    /* ---------- Prefill saved name ---------- */
+    const savedName = loadSavedName();
+    if (savedName) yourName.value = savedName;
+
+    /* ---------- URL preview ---------- */
+    gameLink.addEventListener("input", () => {
+        const val = gameLink.value.trim();
+        if (!val) {
+            urlPreview.classList.remove("show");
+            return;
+        }
+        try {
+            const u = new URL(val);
+            urlPreviewText.textContent = u.hostname + u.pathname;
+            urlPreview.classList.add("show");
+        } catch {
+            urlPreviewText.textContent = val;
+            urlPreview.classList.add("show");
+        }
+    });
+
+    /* ---------- Status helpers ---------- */
+    function escapeHtml(str) {
+        return String(str).replace(/[&<>"']/g, c => ({
+            "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;"
+        })[c]);
+    }
+
+    function formatTime(seconds) {
+        if (seconds <= 0) return "0s";
+        if (seconds < 60) return seconds + "s";
+        const m = Math.floor(seconds / 60);
+        const s = seconds % 60;
+        if (m < 60) return m + "m " + (s < 10 ? "0" : "") + s + "s";
+        const h = Math.floor(m / 60);
+        const mm = m % 60;
+        return h + "h " + (mm < 10 ? "0" : "") + mm + "m";
+    }
+
+    function formatComeBackAt(untilTs) {
+        const d = new Date(untilTs);
+        const hh = String(d.getHours()).padStart(2, "0");
+        const mm = String(d.getMinutes()).padStart(2, "0");
+        const now = new Date();
+        const sameDay = d.toDateString() === now.toDateString();
+        if (sameDay) return "at " + hh + ":" + mm + " today";
+        const tomorrow = new Date(now);
+        tomorrow.setDate(tomorrow.getDate() + 1);
+        if (d.toDateString() === tomorrow.toDateString()) return "at " + hh + ":" + mm + " tomorrow";
+        return "at " + hh + ":" + mm + " on " + d.toLocaleDateString();
+    }
+
+    function showStatus(type, html) {
+        statusMsg.innerHTML = html;
+        statusMsg.className = "status-msg show " + type;
+        clearTimeout(showStatus._t);
+        if (type === "success") {
+            showStatus._t = setTimeout(() => {
+                statusMsg.classList.remove("show");
+            }, 8000);
+        }
+    }
+
+    /* ---------- Lock / unlock ---------- */
+    function lockForm(reasonHtml, untilTimestamp, type) {
+        formCard.classList.add("locked");
+        form.querySelectorAll("input, textarea, select, button").forEach(el => {
+            el.disabled = true;
+        });
+        submitBtn.textContent = type === "ban" ? "Banned" : "Muted";
+
+        clearInterval(cooldownTimer);
+
+        function tick() {
+            const remaining = Math.max(0, Math.ceil((untilTimestamp - Date.now()) / 1000));
+            if (remaining <= 0) {
+                clearInterval(cooldownTimer);
+                unlockForm();
+                checkStatus();
+                return;
+            }
+            showStatus(
+                type === "ban" ? "error" : "warn",
+                reasonHtml + ' <span class="countdown">' + formatTime(remaining) + '</span>'
+            );
+        }
+        tick();
+        cooldownTimer = setInterval(tick, 1000);
+    }
+
+    function lockFormCooldown(seconds) {
+        formCard.classList.add("locked");
+        form.querySelectorAll("input, textarea, select, button").forEach(el => {
+            el.disabled = true;
+        });
+        submitBtn.textContent = "Please wait";
+
+        clearInterval(cooldownTimer);
+        const until = Date.now() + seconds * 1000;
+
+        function tick() {
+            const remaining = Math.max(0, Math.ceil((until - Date.now()) / 1000));
+            if (remaining <= 0) {
+                clearInterval(cooldownTimer);
+                unlockForm();
+                checkStatus();
+                return;
+            }
+            showStatus(
+                "warn",
+                'You can suggest another game in <span class="countdown">' +
+                formatTime(remaining) + '</span>'
+            );
+        }
+        tick();
+        cooldownTimer = setInterval(tick, 1000);
+    }
+
+    function unlockForm() {
+        formCard.classList.remove("locked");
+        form.querySelectorAll("input, textarea, select, button").forEach(el => {
+            el.disabled = false;
+        });
+        submitBtn.textContent = "Submit suggestion";
+        statusMsg.classList.remove("show");
+    }
+
+    /* ---------- Check ban/mute/cooldown ---------- */
+    async function checkStatus() {
+        const name = yourName.value.trim();
+        try {
+            const res = await fetch(STATUS_ENDPOINT, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ yourName: name })
+            });
+            const data = await res.json();
+
+            if (data.banned) {
+                const comeBackAt = formatComeBackAt(data.banUntil);
+                lockForm(
+                    '<b>You are banned from suggesting games.</b><br>' +
+                    '<span style="font-size:12px;opacity:.85;">Reason: ' +
+                    escapeHtml(data.banReason || "Violation of rules") + '</span><br>' +
+                    '<span style="font-size:12px;opacity:.85;">You can come back ' +
+                    comeBackAt + '.</span>',
+                    data.banUntil,
+                    "ban"
+                );
+                return;
+            }
+
+            if (data.muted) {
+                const comeBackAt = formatComeBackAt(data.muteUntil);
+                lockForm(
+                    '<b>You are muted.</b><br>' +
+                    '<span style="font-size:12px;opacity:.85;">Reason: ' +
+                    escapeHtml(data.muteReason || "You are muted") + '</span><br>' +
+                    '<span style="font-size:12px;opacity:.85;">You can suggest again ' +
+                    comeBackAt + '.</span>',
+                    data.muteUntil,
+                    "mute"
+                );
+                return;
+            }
+
+            if (data.cooldownSeconds > 0) {
+                lockFormCooldown(data.cooldownSeconds);
+                return;
+            }
+
+            unlockForm();
+            checkWarnings();
+        } catch (err) {
+            console.warn("Status check failed:", err);
+            unlockForm();
+        }
+    }
+
+    /* ---------- Check pending warnings ---------- */
+    async function checkWarnings() {
+        const name = yourName.value.trim();
+        try {
+            const res = await fetch(WARNINGS_ENDPOINT, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ yourName: name })
+            });
+            const data = await res.json();
+            if (data.warnings && data.warnings.length) {
+                const w = data.warnings[0];
+                setTimeout(() => {
+                    alert("⚠ Warning from admin:\n\n" + w.message +
+                          "\n\nThis is a warning only — please follow the rules.");
+                }, 400);
+            }
+        } catch {}
+    }
+
+    /* ---------- Save name as they type ---------- */
+    yourName.addEventListener("input", () => {
+        const n = yourName.value.trim();
+        saveName(n || "");
+
+        clearTimeout(nameCheckTimer);
+        nameCheckTimer = setTimeout(checkStatus, 500);
+    });
+
+    /* ---------- Validation ---------- */
+    function validate() {
+        const name = gameName.value.trim();
+        const link = gameLink.value.trim();
+        const cat = gameCategory.value;
+
+        if (!name) {
+            showStatus("error", "Please enter the game name.");
+            gameName.focus();
+            return false;
+        }
+        if (!link) {
+            showStatus("error", "Please enter the game link.");
+            gameLink.focus();
+            return false;
+        }
+        let parsed;
+        try { parsed = new URL(link); }
+        catch {
+            showStatus("error", "Game link must be a valid URL starting with http:// or https://");
+            gameLink.focus();
+            return false;
+        }
+        if (!/^https?:$/.test(parsed.protocol)) {
+            showStatus("error", "Game link must use http:// or https://");
+            gameLink.focus();
+            return false;
+        }
+        if (!cat) {
+            showStatus("error", "Please pick a category.");
+            gameCategory.focus();
+            return false;
+        }
+        return true;
+    }
+
+    /* ---------- Submit ---------- */
+    form.addEventListener("submit", async (e) => {
+        e.preventDefault();
+        if (!validate()) return;
+
+        // Persist the name before submitting
+        const n = yourName.value.trim();
+        saveName(n || "");
+
+        submitBtn.disabled = true;
+        const originalText = submitBtn.textContent;
+        submitBtn.innerHTML = '<span class="spinner-inline"></span>Submitting...';
+
+        const payload = {
+            gameName: gameName.value.trim(),
+            gameLink: gameLink.value.trim(),
+            gameCategory: gameCategory.value,
+            gameDescription: gameDescription.value.trim() || "",
+            yourName: yourName.value.trim() || "Anonymous"
+        };
+
+        try {
+            const res = await fetch(FORM_ENDPOINT, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Accept": "application/json"
+                },
+                body: JSON.stringify(payload)
+            });
+
+            const text = await res.text();
+            let data;
+            try { data = JSON.parse(text); }
+            catch {
+                console.error("Non-JSON response:", text.slice(0, 200));
+                throw new Error("Server returned HTML instead of JSON.");
+            }
+
+            if (!res.ok) {
+                if (res.status === 403 && data.until) {
+                    const isMute = (data.error || "").toLowerCase().includes("mute");
+                    const comeBackAt = formatComeBackAt(data.until);
+                    lockForm(
+                        '<b>' + escapeHtml(data.error || "You are blocked") + '</b><br>' +
+                        '<span style="font-size:12px;opacity:.85;">Reason: ' +
+                        escapeHtml(data.reason || "Violation of rules") + '</span><br>' +
+                        '<span style="font-size:12px;opacity:.85;">You can come back ' +
+                        comeBackAt + '.</span>',
+                        data.until,
+                        isMute ? "mute" : "ban"
+                    );
+                    return;
+                }
+                if (res.status === 429 && data.remainingSeconds) {
+                    lockFormCooldown(data.remainingSeconds);
+                    return;
+                }
+                throw new Error(data.error || "Request failed");
+            }
+
+            showStatus("success", "Thanks! Your suggestion was sent. You can submit another in 20 minutes.");
+            // Keep name saved, only reset game fields
+            gameName.value = "";
+            gameLink.value = "";
+            gameCategory.value = "";
+            gameDescription.value = "";
+            urlPreview.classList.remove("show");
+
+            lockFormCooldown(20 * 60);
+
+        } catch (err) {
+            console.error("Suggest submit error:", err);
+            showStatus("error", "Something went wrong: " + err.message);
+            submitBtn.disabled = false;
+            submitBtn.textContent = originalText;
+        }
+    });
+
+    /* ---------- Initial check on page load ---------- */
+    checkStatus();
+
+})();
+</script>
+
+</body>
+</html>
