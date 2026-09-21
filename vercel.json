@@ -2,15 +2,15 @@
   "version": 2,
   "rewrites": [
     {
+      "source": "/",
+      "destination": "/index.html"
+    },
+    {
       "source": "/socket.io/(.*)",
       "destination": "/api/socket"
     },
     {
       "source": "/api/(.*)",
-      "destination": "/api/index"
-    },
-    {
-      "source": "/(.*)",
       "destination": "/api/index"
     }
   ]

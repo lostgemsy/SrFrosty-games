@@ -2,6 +2,19 @@
 
 An unblocked games site made by HOHOGAMES.
 
+## Running locally
+
+Install the server dependencies and start the Express and Socket.IO server:
+
+```sh
+npm install
+npm start
+```
+
+The server runs at `http://localhost:3000`. The browser homepage is still
+`index.html`; `index.mjs` is the Node.js application entrypoint that serves it
+and provides the chat and API routes.
+
 ## Deploying
 
 this site is completely static, making it really easy to deploy!! :D <br>
