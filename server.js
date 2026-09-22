@@ -34,6 +34,7 @@ const RATE_FILE     = path.join(DATA_DIR, "suggest-rate.json");
 const WARN_FILE     = path.join(DATA_DIR, "warnings.json");
 const MESSAGES_FILE = path.join(DATA_DIR, "messages.json");
 const STICKERS_FILE = path.join(DATA_DIR, "stickers.json");
+const LEADERBOARD_FILE = path.join(DATA_DIR, "leaderboard.json");
 
 function loadJSON(file, fallback) {
   try { return JSON.parse(fs.readFileSync(file, "utf8")); }
@@ -50,6 +51,7 @@ let pending       = loadJSON(PENDING_FILE, {});
 let suggests      = loadJSON(SUGGEST_FILE, []);
 let chatMessages  = loadJSON(MESSAGES_FILE, []);
 let customStickers = loadJSON(STICKERS_FILE, []);
+let leaderboard   = loadJSON(LEADERBOARD_FILE, []);
 
 // ============================================
 // STICKERS DIRECTORY
@@ -489,6 +491,56 @@ app.post("/api/suggest/warnings", (req, res) => {
 });
 
 // ============================================
+// LEADERBOARD
+// ============================================
+app.get("/api/leaderboard", (req, res) => {
+  const scores = leaderboard
+    .filter(score => score.status === "approved")
+    .sort((a, b) => b.submittedAt - a.submittedAt);
+  res.json({ scores });
+});
+
+app.post("/api/leaderboard/submit", (req, res) => {
+  try {
+    const { playerName, gameName, score, proofImage } = req.body || {};
+    if (!playerName || !gameName || score === undefined || !proofImage) {
+      return res.status(400).json({ error: "Name, game, score, and proof image are required" });
+    }
+    if (String(playerName).trim().length > 24) {
+      return res.status(400).json({ error: "Name must be 24 characters or less" });
+    }
+    if (String(score).trim().length > 20) {
+      return res.status(400).json({ error: "Score is too long" });
+    }
+    if (typeof proofImage !== "string" || !proofImage.startsWith("data:image/")) {
+      return res.status(400).json({ error: "A valid proof image is required" });
+    }
+    if (proofImage.length > 7 * 1024 * 1024) {
+      return res.status(413).json({ error: "Proof image is too large" });
+    }
+
+    const entry = {
+      id: Date.now().toString(36) + Math.random().toString(36).slice(2, 8),
+      playerName: String(playerName).trim(),
+      gameName: String(gameName).trim(),
+      score: String(score).trim(),
+      proofImage,
+      avatar: "png/logo.png",
+      ip: getClientIp(req),
+      submittedAt: Date.now(),
+      status: "pending"
+    };
+    leaderboard.push(entry);
+    saveJSON(LEADERBOARD_FILE, leaderboard);
+    io.emit("leaderboard-new", { id: entry.id });
+    res.status(201).json({ ok: true, score: entry });
+  } catch (err) {
+    console.error("leaderboard submit error:", err);
+    res.status(500).json({ error: "Server error" });
+  }
+});
+
+// ============================================
 // ADMIN ROUTES — AUTH
 // ============================================
 app.post("/api/admin/login", (req, res) => {
@@ -513,6 +565,33 @@ app.post("/api/admin/logout", requireAdmin, (req, res) => {
 });
 
 app.get("/api/admin/verify", requireAdmin, (req, res) => {
+  res.json({ ok: true });
+});
+
+app.get("/api/admin/leaderboard", requireAdmin, (req, res) => {
+  const scores = leaderboard.slice().sort((a, b) => b.submittedAt - a.submittedAt);
+  res.json({ scores, total: scores.length });
+});
+
+app.post("/api/admin/leaderboard/:id/:action", requireAdmin, (req, res) => {
+  const score = leaderboard.find(entry => entry.id === req.params.id);
+  if (!score) return res.status(404).json({ error: "Score not found" });
+  if (!["approve", "reject"].includes(req.params.action)) {
+    return res.status(400).json({ error: "Invalid action" });
+  }
+  score.status = req.params.action === "approve" ? "approved" : "rejected";
+  score[score.status + "At"] = Date.now();
+  saveJSON(LEADERBOARD_FILE, leaderboard);
+  io.emit("leaderboard-updated", { id: score.id, status: score.status });
+  res.json({ ok: true, score });
+});
+
+app.delete("/api/admin/leaderboard/:id", requireAdmin, (req, res) => {
+  const index = leaderboard.findIndex(entry => entry.id === req.params.id);
+  if (index === -1) return res.status(404).json({ error: "Score not found" });
+  leaderboard.splice(index, 1);
+  saveJSON(LEADERBOARD_FILE, leaderboard);
+  io.emit("leaderboard-updated", { id: req.params.id, deleted: true });
   res.json({ ok: true });
 });
 

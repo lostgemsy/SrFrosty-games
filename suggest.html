@@ -83,7 +83,7 @@ body {
    ============================================ */
 .top-nav {
     width: 100%;
-    max-width: 760px;
+    max-width: 900px;
     display: flex;
     justify-content: center;
     flex-wrap: wrap;
@@ -97,7 +97,7 @@ body {
     align-items: center;
     justify-content: center;
     gap: 10px;
-    padding: 14px 28px;
+    padding: 14px 24px;
     border-radius: 14px;
     background: #ffffff;
     border: 2px solid #e2e2e2;
@@ -126,6 +126,17 @@ body {
     color: #fff;
 }
 
+.nav-item.suggest {
+    background: #111;
+    border-color: #111;
+    color: #fff;
+}
+
+.nav-item.suggest:hover {
+    background: #333;
+    border-color: #333;
+}
+
 .nav-item img {
     width: 18px;
     height: 18px;
@@ -135,7 +146,8 @@ body {
 }
 
 .nav-item:hover img,
-.nav-item[aria-current="page"] img {
+.nav-item[aria-current="page"] img,
+.nav-item.suggest img {
     filter: brightness(0) invert(1);
     opacity: 1;
 }
@@ -519,10 +531,13 @@ body {
     <a href="games.html" class="nav-item" title="Games">
         <img src="png/gamepad-solid.svg" alt="" onerror="this.style.display='none'"> Games
     </a>
+    <a href="leaderboard.html" class="nav-item" title="Leaderboard">
+        <img src="png/trophy-solid.svg" alt="" onerror="this.style.display='none'"> Leaderboard
+    </a>
     <a href="chat.html" class="nav-item" title="Chat">
         <img src="png/comment-solid.svg" alt="" onerror="this.style.display='none'"> Chat
     </a>
-    <a href="suggest.html" class="nav-item" title="Suggest" aria-current="page">
+    <a href="suggest.html" class="nav-item suggest" title="Suggest" aria-current="page">
         <img src="suggest.png" alt="" onerror="this.style.display='none'"> Suggest
     </a>
     <a href="settings.html" class="nav-item" title="Settings">
@@ -692,7 +707,6 @@ body {
             const saved = localStorage.getItem(NAME_KEY);
             if (saved) return saved;
         } catch {}
-        // Fallback: chat username if logged in
         try {
             const raw = localStorage.getItem("farius_user");
             if (raw) {
@@ -725,11 +739,9 @@ body {
     let cooldownTimer = null;
     let nameCheckTimer = null;
 
-    /* ---------- Prefill saved name ---------- */
     const savedName = loadSavedName();
     if (savedName) yourName.value = savedName;
 
-    /* ---------- URL preview ---------- */
     gameLink.addEventListener("input", () => {
         const val = gameLink.value.trim();
         if (!val) {
@@ -746,7 +758,6 @@ body {
         }
     });
 
-    /* ---------- Status helpers ---------- */
     function escapeHtml(str) {
         return String(str).replace(/[&<>"']/g, c => ({
             "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;"
@@ -788,7 +799,6 @@ body {
         }
     }
 
-    /* ---------- Lock / unlock ---------- */
     function lockForm(reasonHtml, untilTimestamp, type) {
         formCard.classList.add("locked");
         form.querySelectorAll("input, textarea, select, button").forEach(el => {
@@ -852,7 +862,6 @@ body {
         statusMsg.classList.remove("show");
     }
 
-    /* ---------- Check ban/mute/cooldown ---------- */
     async function checkStatus() {
         const name = yourName.value.trim();
         try {
@@ -904,7 +913,6 @@ body {
         }
     }
 
-    /* ---------- Check pending warnings ---------- */
     async function checkWarnings() {
         const name = yourName.value.trim();
         try {
@@ -924,7 +932,6 @@ body {
         } catch {}
     }
 
-    /* ---------- Save name as they type ---------- */
     yourName.addEventListener("input", () => {
         const n = yourName.value.trim();
         saveName(n || "");
@@ -933,7 +940,6 @@ body {
         nameCheckTimer = setTimeout(checkStatus, 500);
     });
 
-    /* ---------- Validation ---------- */
     function validate() {
         const name = gameName.value.trim();
         const link = gameLink.value.trim();
@@ -969,12 +975,10 @@ body {
         return true;
     }
 
-    /* ---------- Submit ---------- */
     form.addEventListener("submit", async (e) => {
         e.preventDefault();
         if (!validate()) return;
 
-        // Persist the name before submitting
         const n = yourName.value.trim();
         saveName(n || "");
 
@@ -1031,7 +1035,6 @@ body {
             }
 
             showStatus("success", "Thanks! Your suggestion was sent. You can submit another in 20 minutes.");
-            // Keep name saved, only reset game fields
             gameName.value = "";
             gameLink.value = "";
             gameCategory.value = "";
@@ -1048,7 +1051,6 @@ body {
         }
     });
 
-    /* ---------- Initial check on page load ---------- */
     checkStatus();
 
 })();

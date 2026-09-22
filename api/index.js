@@ -94,6 +94,21 @@ async function ensureDB() {
       uploaded_at BIGINT
     );
   `;
+  await sql`
+    CREATE TABLE IF NOT EXISTS leaderboard (
+      id TEXT PRIMARY KEY,
+      player_name TEXT NOT NULL,
+      game_name TEXT NOT NULL,
+      score TEXT NOT NULL,
+      proof_image TEXT NOT NULL,
+      avatar TEXT,
+      ip TEXT,
+      submitted_at BIGINT,
+      status TEXT DEFAULT 'pending',
+      approved_at BIGINT,
+      rejected_at BIGINT
+    );
+  `;
   dbReady = true;
 }
 app.use(async (req, res, next) => {
@@ -117,6 +132,22 @@ function getClientIp(req) {
   return (req.headers["x-forwarded-for"] || "").split(",")[0].trim()
       || req.socket?.remoteAddress
       || "unknown";
+}
+
+function mapLeaderboardRow(row) {
+  return {
+    id: row.id,
+    playerName: row.player_name,
+    gameName: row.game_name,
+    score: row.score,
+    proofImage: row.proof_image,
+    avatar: row.avatar || "png/logo.png",
+    ip: row.ip,
+    submittedAt: Number(row.submitted_at),
+    status: row.status,
+    ...(row.approved_at ? { approvedAt: Number(row.approved_at) } : {}),
+    ...(row.rejected_at ? { rejectedAt: Number(row.rejected_at) } : {})
+  };
 }
 function getIdentifier(req, body) {
   const name = (body && body.yourName || "").trim();
@@ -323,6 +354,76 @@ app.post("/api/admin/logout", requireAdmin, (req, res) => {
 });
 
 app.get("/api/admin/verify", requireAdmin, (req, res) => res.json({ ok: true }));
+
+app.get("/api/leaderboard", async (req, res) => {
+  const rows = await sql`
+    SELECT * FROM leaderboard
+    WHERE status = 'approved'
+    ORDER BY submitted_at DESC
+  `;
+  res.json({ scores: rows.map(mapLeaderboardRow) });
+});
+
+app.post("/api/leaderboard/submit", async (req, res) => {
+  const { playerName, gameName, score, proofImage } = req.body || {};
+  if (!playerName || !gameName || score === undefined || !proofImage) {
+    return res.status(400).json({ error: "Name, game, score, and proof image are required" });
+  }
+  if (String(playerName).trim().length > 24) {
+    return res.status(400).json({ error: "Name must be 24 characters or less" });
+  }
+  if (String(score).trim().length > 20) {
+    return res.status(400).json({ error: "Score is too long" });
+  }
+  if (typeof proofImage !== "string" || !proofImage.startsWith("data:image/")) {
+    return res.status(400).json({ error: "A valid proof image is required" });
+  }
+  if (proofImage.length > 7 * 1024 * 1024) {
+    return res.status(413).json({ error: "Proof image is too large" });
+  }
+
+  const entry = {
+    id: Date.now().toString(36) + Math.random().toString(36).slice(2, 8),
+    playerName: String(playerName).trim(),
+    gameName: String(gameName).trim(),
+    score: String(score).trim(),
+    proofImage,
+    avatar: "png/logo.png",
+    ip: getClientIp(req),
+    submittedAt: Date.now(),
+    status: "pending"
+  };
+  await sql`
+    INSERT INTO leaderboard (id, player_name, game_name, score, proof_image, avatar, ip, submitted_at, status)
+    VALUES (${entry.id}, ${entry.playerName}, ${entry.gameName}, ${entry.score}, ${entry.proofImage}, ${entry.avatar}, ${entry.ip}, ${entry.submittedAt}, ${entry.status})
+  `;
+  res.status(201).json({ ok: true, score: entry });
+});
+
+app.get("/api/admin/leaderboard", requireAdmin, async (req, res) => {
+  const rows = await sql`SELECT * FROM leaderboard ORDER BY submitted_at DESC`;
+  const scores = rows.map(mapLeaderboardRow);
+  res.json({ scores, total: scores.length });
+});
+
+app.post("/api/admin/leaderboard/:id/:action", requireAdmin, async (req, res) => {
+  if (!["approve", "reject"].includes(req.params.action)) {
+    return res.status(400).json({ error: "Invalid action" });
+  }
+  const status = req.params.action === "approve" ? "approved" : "rejected";
+  const timestampColumn = status === "approved" ? "approved_at" : "rejected_at";
+  const rows = timestampColumn === "approved_at"
+    ? await sql`UPDATE leaderboard SET status = ${status}, approved_at = ${Date.now()} WHERE id = ${req.params.id} RETURNING *`
+    : await sql`UPDATE leaderboard SET status = ${status}, rejected_at = ${Date.now()} WHERE id = ${req.params.id} RETURNING *`;
+  if (!rows.length) return res.status(404).json({ error: "Score not found" });
+  res.json({ ok: true, score: mapLeaderboardRow(rows[0]) });
+});
+
+app.delete("/api/admin/leaderboard/:id", requireAdmin, async (req, res) => {
+  const rows = await sql`DELETE FROM leaderboard WHERE id = ${req.params.id} RETURNING id`;
+  if (!rows.length) return res.status(404).json({ error: "Score not found" });
+  res.json({ ok: true });
+});
 
 app.get("/api/admin/suggestions", requireAdmin, async (req, res) => {
   const filter = req.query.status || "all";

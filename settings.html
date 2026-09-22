@@ -10,11 +10,7 @@
         /* ============================================
            RESET & GLOBAL
            ============================================ */
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
 
         html, body {
             width: 100%;
@@ -49,7 +45,7 @@
             justify-content: center;
             align-items: center;
             background: #f7f7f7;
-            z-index: 9999;
+            z-index: 99999;
             transition: opacity 0.7s ease, visibility 0.7s ease;
         }
 
@@ -59,11 +55,7 @@
             pointer-events: none;
         }
 
-        .dots {
-            display: flex;
-            gap: 14px;
-            margin-bottom: 28px;
-        }
+        .dots { display: flex; gap: 14px; margin-bottom: 28px; }
 
         .dot {
             width: 14px;
@@ -89,13 +81,14 @@
         }
 
         /* ============================================
-           TOP NAVIGATION (same as index.html)
+           TOP NAVIGATION
            ============================================ */
         .top-nav {
             width: 100%;
-            max-width: 760px;
+            max-width: 900px;
             display: flex;
             justify-content: center;
+            flex-wrap: wrap;
             gap: 12px;
             margin-bottom: 40px;
             animation: fadeInUp 0.7s ease-out both;
@@ -106,7 +99,7 @@
             align-items: center;
             justify-content: center;
             gap: 10px;
-            padding: 14px 28px;
+            padding: 14px 24px;
             border-radius: 14px;
             background: #ffffff;
             border: 2px solid #e2e2e2;
@@ -127,14 +120,23 @@
             box-shadow: 0 12px 28px rgba(0, 0, 0, 0.14);
         }
 
-        .nav-item:active {
-            transform: translateY(-1px);
-        }
+        .nav-item:active { transform: translateY(-1px); }
 
         .nav-item[aria-current="page"] {
             background: #111;
             border-color: #111;
             color: #fff;
+        }
+
+        .nav-item.suggest {
+            background: #111;
+            border-color: #111;
+            color: #fff;
+        }
+
+        .nav-item.suggest:hover {
+            background: #333;
+            border-color: #333;
         }
 
         .nav-item img {
@@ -146,7 +148,8 @@
         }
 
         .nav-item:hover img,
-        .nav-item[aria-current="page"] img {
+        .nav-item[aria-current="page"] img,
+        .nav-item.suggest img {
             filter: brightness(0) invert(1);
             opacity: 1;
         }
@@ -160,7 +163,7 @@
             align-items: center;
             text-align: center;
             margin-bottom: 40px;
-            animation: fadeInUp 0.7s ease-out both;
+            animation: fadeInUp 0.7s 0.05s ease-out both;
         }
 
         .site-brand strong {
@@ -191,7 +194,7 @@
             flex-direction: column;
             align-items: center;
             padding: 0 0 80px;
-            animation: fadeInUp 0.8s ease-out both;
+            animation: fadeInUp 0.8s 0.1s ease-out both;
         }
 
         @keyframes fadeInUp {
@@ -318,10 +321,7 @@
             transition: border-color 0.25s ease, box-shadow 0.25s ease, background 0.25s ease;
         }
 
-        .fs input[type="text"]::placeholder {
-            color: #bbb;
-            font-weight: 400;
-        }
+        .fs input[type="text"]::placeholder { color: #bbb; font-weight: 400; }
 
         .fs input[type="text"]:focus {
             border-color: #111;
@@ -329,9 +329,7 @@
             box-shadow: 0 0 0 4px rgba(0, 0, 0, 0.06);
         }
 
-        .fs input.bad {
-            border-color: #e74c3c;
-        }
+        .fs input.bad { border-color: #e74c3c; }
 
         .fs-err {
             font-size: 0.82rem;
@@ -340,9 +338,7 @@
             min-height: 0;
         }
 
-        .fs-err:empty {
-            display: none;
-        }
+        .fs-err:empty { display: none; }
 
         /* ============================================
            BUTTONS
@@ -370,9 +366,7 @@
             box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
         }
 
-        .fs-btn:active {
-            transform: translateY(-1px);
-        }
+        .fs-btn:active { transform: translateY(-1px); }
 
         .fs-btn.danger:hover {
             background: #e74c3c;
@@ -403,18 +397,12 @@
             box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
         }
 
-        .fs-key:active {
-            transform: translateY(-1px);
-        }
+        .fs-key:active { transform: translateY(-1px); }
 
-        .fs-key.cap {
-            animation: fsPulse 1.2s ease-in-out infinite;
-        }
+        .fs-key.cap { animation: fsPulse 1.2s ease-in-out infinite; }
 
         @keyframes fsPulse {
-            50% {
-                box-shadow: 0 0 0 8px rgba(0, 0, 0, 0.08);
-            }
+            50% { box-shadow: 0 0 0 8px rgba(0, 0, 0, 0.08); }
         }
 
         /* ============================================
@@ -505,13 +493,9 @@
             transition: transform 0.3s cubic-bezier(.2,.8,.2,1);
         }
 
-        .fs-switch:checked {
-            background: #111;
-        }
+        .fs-switch:checked { background: #111; }
 
-        .fs-switch:checked::after {
-            transform: translateX(22px);
-        }
+        .fs-switch:checked::after { transform: translateX(22px); }
 
         /* ============================================
            TOAST
@@ -536,76 +520,37 @@
             transition: opacity 0.25s ease, transform 0.35s cubic-bezier(.2,.8,.2,1);
         }
 
-        .fs-toast.show {
-            opacity: 1;
-            transform: translate(-50%, 0);
-        }
+        .fs-toast.show { opacity: 1; transform: translate(-50%, 0); }
 
         /* ============================================
            RESPONSIVE
            ============================================ */
-        @media (max-width: 650px) {
-            body {
-                padding: 16px;
-            }
+        @media (max-width: 720px) {
+            body { padding: 16px; }
 
-            .top-nav {
-                gap: 8px;
-                margin-bottom: 28px;
-            }
+            .top-nav { gap: 8px; margin-bottom: 28px; }
+            .nav-item { padding: 10px 16px; font-size: 13px; border-radius: 12px; gap: 6px; }
+            .nav-item img { width: 16px; height: 16px; }
 
-            .nav-item {
-                padding: 10px 16px;
-                font-size: 13px;
-                border-radius: 12px;
-                gap: 6px;
-            }
-
-            .nav-item img {
-                width: 16px;
-                height: 16px;
-            }
-
-            .site-brand {
-                margin-bottom: 28px;
-            }
-
-            .site-brand strong {
-                font-size: 2.2rem;
-            }
-
-            .site-brand small {
-                font-size: 0.65rem;
-            }
+            .site-brand { margin-bottom: 28px; }
+            .site-brand strong { font-size: 2.2rem; }
+            .site-brand small { font-size: 0.65rem; }
 
             .fs-card {
                 padding: 20px 18px 6px;
                 border-radius: 16px;
             }
 
-            .fs-card h2 {
-                font-size: 1.05rem;
-            }
+            .fs-card h2 { font-size: 1.05rem; }
 
-            .fs-row {
-                align-items: flex-start;
-            }
+            .fs-row { align-items: flex-start; }
 
-            .fs-switch {
-                margin-top: 2px;
-            }
+            .fs-switch { margin-top: 2px; }
 
-            .fs-custom {
-                grid-template-columns: 1fr;
-            }
+            .fs-custom { grid-template-columns: 1fr; }
 
-            .fs-field {
-                flex-direction: column;
-            }
-
-            .fs-field .fs-btn {
-                width: 100%;
-            }
+            .fs-field { flex-direction: column; }
+            .fs-field .fs-btn { width: 100%; }
 
             .fs-key {
                 min-width: 80px;
@@ -615,38 +560,26 @@
         }
 
         @media (max-width: 480px) {
-            .top-nav {
-                flex-wrap: wrap;
-            }
+            .top-nav { flex-wrap: wrap; }
+            .nav-item { padding: 10px 14px; font-size: 12px; }
 
-            .nav-item {
-                padding: 10px 14px;
-                font-size: 12px;
-            }
-
-            .fs-chips {
-                gap: 6px;
-            }
-
-            .fs-chip {
-                height: 36px;
-                padding: 0 12px;
-                font-size: 0.78rem;
-            }
-
-            .fs-chip img {
-                width: 15px;
-                height: 15px;
-            }
+            .fs-chips { gap: 6px; }
+            .fs-chip { height: 36px; padding: 0 12px; font-size: 0.78rem; }
+            .fs-chip img { width: 15px; height: 15px; }
         }
 
         @media (prefers-reduced-motion: reduce) {
-            *,
-            *::before,
-            *::after {
+            *, *::before, *::after {
                 animation: none !important;
                 transition: none !important;
             }
+        }
+
+        html.calm *,
+        html.calm *::before,
+        html.calm *::after {
+            animation: none !important;
+            transition: none !important;
         }
     </style>
 </head>
@@ -665,13 +598,22 @@
     <!-- Top Navigation -->
     <nav class="top-nav" aria-label="Main navigation">
         <a href="index.html" class="nav-item" title="Home">
-            <img src="png/house-solid.svg" alt=""> Home
+            <img src="png/house-solid.svg" alt="" onerror="this.style.display='none'"> Home
         </a>
         <a href="games.html" class="nav-item" title="Games">
-            <img src="png/gamepad-solid.svg" alt=""> Games
+            <img src="png/gamepad-solid.svg" alt="" onerror="this.style.display='none'"> Games
+        </a>
+        <a href="leaderboard.html" class="nav-item" title="Leaderboard">
+            <img src="png/trophy-solid.svg" alt="" onerror="this.style.display='none'"> Leaderboard
+        </a>
+        <a href="chat.html" class="nav-item" title="Chat">
+            <img src="png/comment-solid.svg" alt="" onerror="this.style.display='none'"> Chat
+        </a>
+        <a href="suggest.html" class="nav-item suggest" title="Suggest a game">
+            <img src="suggest.png" alt="" onerror="this.style.display='none'"> Suggest
         </a>
         <a href="settings.html" class="nav-item" title="Settings" aria-current="page">
-            <img src="png/gear-solid.svg" alt=""> Settings
+            <img src="png/gear-solid.svg" alt="" onerror="this.style.display='none'"> Settings
         </a>
     </nav>
 
@@ -693,12 +635,12 @@
         <!-- Panic Key -->
         <section class="fs-card" style="--i:0">
             <h2>Panic key</h2>
-            <p>Press your key on any page to jump straight to a site you choose.</p>
+            <p>Press your key on any page to jump straight to a site you choose. Everything on this site respects it.</p>
 
             <label class="fs-row">
                 <span class="fs-txt">
                     <b>Turn on panic key</b>
-                    <small>Ignored while you type in a text box, unless you use Ctrl, Alt or Meta.</small>
+                    <small>Ignored while you type in a text box, unless you use Ctrl, Alt, or Meta.</small>
                 </span>
                 <input type="checkbox" class="fs-switch" id="panic-on" role="switch">
             </label>
@@ -730,7 +672,7 @@
         <!-- Tab Cloak -->
         <section class="fs-card" style="--i:1">
             <h2>Tab cloak</h2>
-            <p>Change the title and icon shown in your browser tab.</p>
+            <p>Change the title and icon shown in your browser tab — useful for keeping the site discreet.</p>
 
             <div class="fs-row fs-stack">
                 <div class="fs-chips" id="cloak-chips"></div>
@@ -749,10 +691,48 @@
             </div>
         </section>
 
-        <!-- Site -->
+        <!-- Game Preferences -->
         <section class="fs-card" style="--i:2">
-            <h2>Site</h2>
-            <p>General options for how Farius behaves.</p>
+            <h2>Game preferences</h2>
+            <p>Control how games behave when you launch them.</p>
+
+            <label class="fs-row">
+                <span class="fs-txt">
+                    <b>Auto fullscreen games</b>
+                    <small>Games open in fullscreen automatically when possible.</small>
+                </span>
+                <input type="checkbox" class="fs-switch" id="autofull-on" role="switch">
+            </label>
+
+            <label class="fs-row">
+                <span class="fs-txt">
+                    <b>Confirm before closing a game</b>
+                    <small>Shows a warning before you close a running game, so you don't lose progress.</small>
+                </span>
+                <input type="checkbox" class="fs-switch" id="gameconfirm-on" role="switch">
+            </label>
+
+            <label class="fs-row">
+                <span class="fs-txt">
+                    <b>Mute game audio on launch</b>
+                    <small>Games start muted — you can unmute inside the game itself.</small>
+                </span>
+                <input type="checkbox" class="fs-switch" id="mute-on" role="switch">
+            </label>
+
+            <label class="fs-row">
+                <span class="fs-txt">
+                    <b>Reduce animations</b>
+                    <small>Turns off motion effects across the site for smoother performance on slow devices.</small>
+                </span>
+                <input type="checkbox" class="fs-switch" id="calm-on" role="switch">
+            </label>
+        </section>
+
+        <!-- Safety & Privacy -->
+        <section class="fs-card" style="--i:3">
+            <h2>Safety &amp; privacy</h2>
+            <p>Extra tools for keeping your session private.</p>
 
             <label class="fs-row">
                 <span class="fs-txt">
@@ -764,11 +744,49 @@
 
             <label class="fs-row">
                 <span class="fs-txt">
-                    <b>Reduce animations</b>
-                    <small>Turns off motion effects across the site.</small>
+                    <b>Open links in new tab</b>
+                    <small>Any link you click opens in a new tab instead of replacing the current one.</small>
                 </span>
-                <input type="checkbox" class="fs-switch" id="calm-on" role="switch">
+                <input type="checkbox" class="fs-switch" id="newtab-on" role="switch">
             </label>
+
+            <label class="fs-row">
+                <span class="fs-txt">
+                    <b>Hide cursor on idle</b>
+                    <small>Hides the mouse cursor after 3 seconds of no movement — good for watching games or videos.</small>
+                </span>
+                <input type="checkbox" class="fs-switch" id="idlehide-on" role="switch">
+            </label>
+
+            <div class="fs-row">
+                <span class="fs-txt">
+                    <b>Clear all site data</b>
+                    <small>Removes favorites, backgrounds, chat login, and every saved setting. Cannot be undone.</small>
+                </span>
+                <button type="button" class="fs-btn danger" id="clear-btn">Clear data</button>
+            </div>
+        </section>
+
+        <!-- Advanced -->
+        <section class="fs-card" style="--i:4">
+            <h2>Advanced</h2>
+            <p>Danger zone — only use these if you know what you're doing.</p>
+
+            <div class="fs-row">
+                <span class="fs-txt">
+                    <b>Export settings</b>
+                    <small>Copies your settings to your clipboard as JSON.</small>
+                </span>
+                <button type="button" class="fs-btn" id="export-btn">Export</button>
+            </div>
+
+            <div class="fs-row">
+                <span class="fs-txt">
+                    <b>Import settings</b>
+                    <small>Paste JSON settings you previously exported.</small>
+                </span>
+                <button type="button" class="fs-btn" id="import-btn">Import</button>
+            </div>
 
             <div class="fs-row">
                 <span class="fs-txt">
@@ -808,7 +826,7 @@
         gtag("config", "G-WLTG1S4STB");
     </script>
 
-    <!-- Settings Engine (self-contained, no external /farius.js needed) -->
+    <!-- Settings Engine -->
     <script>
         (function () {
             "use strict";
@@ -835,7 +853,12 @@
                     icon: ""
                 },
                 confirmLeave: false,
-                calm: false
+                calm: false,
+                autoFullscreen: false,
+                gameConfirm: true,
+                muteGames: false,
+                openNewTab: false,
+                idleHideCursor: false
             };
 
             var SITES = [
@@ -852,12 +875,16 @@
                     var raw = localStorage.getItem(KEY);
                     if (!raw) return JSON.parse(JSON.stringify(DEFAULTS));
                     var parsed = JSON.parse(raw);
-                    // deep merge defaults
                     return {
                         panic: Object.assign({}, DEFAULTS.panic, parsed.panic || {}),
                         cloak: Object.assign({}, DEFAULTS.cloak, parsed.cloak || {}),
                         confirmLeave: parsed.confirmLeave || false,
-                        calm: parsed.calm || false
+                        calm: parsed.calm || false,
+                        autoFullscreen: parsed.autoFullscreen || false,
+                        gameConfirm: parsed.gameConfirm !== undefined ? parsed.gameConfirm : true,
+                        muteGames: parsed.muteGames || false,
+                        openNewTab: parsed.openNewTab || false,
+                        idleHideCursor: parsed.idleHideCursor || false
                     };
                 } catch (e) {
                     return JSON.parse(JSON.stringify(DEFAULTS));
@@ -865,9 +892,7 @@
             }
 
             function save(state) {
-                try {
-                    localStorage.setItem(KEY, JSON.stringify(state));
-                } catch (e) {}
+                try { localStorage.setItem(KEY, JSON.stringify(state)); } catch (e) {}
             }
 
             function reset() {
@@ -878,15 +903,8 @@
                 if (!value) return "";
                 var v = value.trim();
                 if (!v) return "";
-                if (!/^https?:\/\//i.test(v)) {
-                    v = "https://" + v;
-                }
-                try {
-                    var u = new URL(v);
-                    return u.href;
-                } catch (e) {
-                    return "";
-                }
+                if (!/^https?:\/\//i.test(v)) v = "https://" + v;
+                try { return new URL(v).href; } catch (e) { return ""; }
             }
 
             function fav(domain) {
@@ -896,23 +914,16 @@
             function cloakInfo(cloak) {
                 if (!cloak || cloak.id === "none") return null;
                 if (cloak.id === "custom") {
-                    return {
-                        title: cloak.title || "Farius",
-                        icon: cloak.icon || ""
-                    };
+                    return { title: cloak.title || "Farius", icon: cloak.icon || "" };
                 }
                 for (var i = 0; i < SITES.length; i++) {
                     if (SITES[i].id === cloak.id) {
-                        return {
-                            title: SITES[i].name,
-                            icon: fav(SITES[i].domain)
-                        };
+                        return { title: SITES[i].name, icon: fav(SITES[i].domain) };
                     }
                 }
                 return null;
             }
 
-            /* Expose for potential external use */
             window.Farius = {
                 load: load,
                 save: save,
@@ -936,15 +947,15 @@
                 toastEl.textContent = message;
                 toastEl.classList.add("show");
                 clearTimeout(tt);
-                tt = setTimeout(function () {
-                    toastEl.classList.remove("show");
-                }, 1700);
+                tt = setTimeout(function () { toastEl.classList.remove("show"); }, 1700);
             }
 
             function commit(message) {
                 save(S);
                 applyPanic();
                 applyCloak();
+                applyCalm();
+                applyIdleHide();
                 if (message) toast(message);
             }
 
@@ -981,7 +992,6 @@
             var capturing = false;
 
             $("panic-on").checked = S.panic.on;
-
             $("panic-on").onchange = function () {
                 S.panic.on = this.checked;
                 commit(this.checked ? "Panic key on" : "Panic key off");
@@ -1008,11 +1018,11 @@
 
             document.addEventListener("keydown", function (e) {
                 if (!capturing) return;
-                if (e.key === "Tab") { return stopCapture(); }
+                if (e.key === "Tab") return stopCapture();
                 e.preventDefault();
                 e.stopPropagation();
                 if (["Shift", "Control", "Alt", "Meta"].indexOf(e.key) > -1) return;
-                if (e.key === "Escape") { return stopCapture(); }
+                if (e.key === "Escape") return stopCapture();
 
                 var name = e.key === " " ? "Space" : (e.key.length === 1 ? e.key.toUpperCase() : e.key);
 
@@ -1037,9 +1047,7 @@
 
             function markPanic() {
                 var cur = safeUrl(url.value);
-                mark(pChips, function (i) {
-                    return cur === safeUrl(SITES[i].url);
-                });
+                mark(pChips, function (i) { return cur === safeUrl(SITES[i].url); });
             }
 
             SITES.forEach(function (s) {
@@ -1093,9 +1101,7 @@
                 .concat([{ id: "custom", name: "Custom" }]);
 
             function markCloak() {
-                mark(cChips, function (i) {
-                    return opts[i].id === S.cloak.id;
-                });
+                mark(cChips, function (i) { return opts[i].id === S.cloak.id; });
                 custom.hidden = S.cloak.id !== "custom";
             }
 
@@ -1141,11 +1147,23 @@
             };
 
             /* ============================================
-               SITE SETTINGS
+               GAME PREFERENCES
                ============================================ */
-            $("leave-on").checked = S.confirmLeave;
-            $("leave-on").onchange = function () {
-                S.confirmLeave = this.checked;
+            $("autofull-on").checked = S.autoFullscreen;
+            $("autofull-on").onchange = function () {
+                S.autoFullscreen = this.checked;
+                commit();
+            };
+
+            $("gameconfirm-on").checked = S.gameConfirm;
+            $("gameconfirm-on").onchange = function () {
+                S.gameConfirm = this.checked;
+                commit();
+            };
+
+            $("mute-on").checked = S.muteGames;
+            $("mute-on").onchange = function () {
+                S.muteGames = this.checked;
                 commit();
             };
 
@@ -1156,8 +1174,70 @@
             };
 
             /* ============================================
-               RESET
+               SAFETY & PRIVACY
                ============================================ */
+            $("leave-on").checked = S.confirmLeave;
+            $("leave-on").onchange = function () {
+                S.confirmLeave = this.checked;
+                commit();
+            };
+
+            $("newtab-on").checked = S.openNewTab;
+            $("newtab-on").onchange = function () {
+                S.openNewTab = this.checked;
+                commit();
+            };
+
+            $("idlehide-on").checked = S.idleHideCursor;
+            $("idlehide-on").onchange = function () {
+                S.idleHideCursor = this.checked;
+                applyIdleHide();
+                commit();
+            };
+
+            $("clear-btn").onclick = function () {
+                if (!confirm("This will erase ALL saved data for Farius — favorites, backgrounds, chat login, everything. Continue?")) return;
+                if (!confirm("Are you absolutely sure? This cannot be undone.")) return;
+                try {
+                    Object.keys(localStorage).forEach(function (k) {
+                        if (k.indexOf("farius") !== -1) localStorage.removeItem(k);
+                    });
+                } catch (e) {}
+                toast("All data cleared");
+                setTimeout(function () { location.reload(); }, 900);
+            };
+
+            /* ============================================
+               ADVANCED
+               ============================================ */
+            $("export-btn").onclick = function () {
+                try {
+                    var json = JSON.stringify(S, null, 2);
+                    navigator.clipboard.writeText(json).then(function () {
+                        toast("Settings copied to clipboard");
+                    }).catch(function () {
+                        // fallback
+                        prompt("Copy your settings:", json);
+                    });
+                } catch (e) { toast("Export failed"); }
+            };
+
+            $("import-btn").onclick = function () {
+                var raw = prompt("Paste your exported settings JSON:");
+                if (!raw) return;
+                try {
+                    var parsed = JSON.parse(raw);
+                    S = Object.assign({}, DEFAULTS, parsed);
+                    S.panic = Object.assign({}, DEFAULTS.panic, parsed.panic || {});
+                    S.cloak = Object.assign({}, DEFAULTS.cloak, parsed.cloak || {});
+                    save(S);
+                    toast("Settings imported");
+                    setTimeout(function () { location.reload(); }, 800);
+                } catch (e) {
+                    toast("Invalid settings JSON");
+                }
+            };
+
             var resetBtn = $("reset-btn");
             resetBtn.onclick = function () {
                 if (resetBtn.dataset.sure) {
@@ -1174,7 +1254,7 @@
             };
 
             /* ============================================
-               APPLY PANIC KEY (GLOBAL)
+               APPLY — PANIC KEY (global listener)
                ============================================ */
             function keyMatches(e, p) {
                 if (!p.code) return false;
@@ -1195,15 +1275,15 @@
             }
 
             function applyPanic() {
-                // handled by single global listener below
+                // handled by the global keydown listener below
             }
 
             document.addEventListener("keydown", function (e) {
                 if (!S.panic.on) return;
                 if (window.Farius.paused) return;
+                if (capturing) return;
                 if (!keyMatches(e, S.panic)) return;
 
-                // If typing in an input, require a modifier unless it's a function key
                 var typing = isTypingTarget(e.target);
                 var hasMod = e.ctrlKey || e.altKey || e.metaKey;
                 if (typing && !hasMod) return;
@@ -1217,7 +1297,7 @@
             }, true);
 
             /* ============================================
-               APPLY CLOAK (TITLE + ICON)
+               APPLY — CLOAK
                ============================================ */
             function applyCloak() {
                 var info = cloakInfo(S.cloak);
@@ -1225,7 +1305,6 @@
                 if (info.title) document.title = info.title;
 
                 if (info.icon) {
-                    // Update or create favicon link
                     var links = document.querySelectorAll("link[rel*='icon']");
                     var found = false;
                     for (var i = 0; i < links.length; i++) {
@@ -1241,11 +1320,10 @@
                 }
             }
 
-            /* Apply on load */
             applyCloak();
 
             /* ============================================
-               CONFIRM LEAVE
+               APPLY — CONFIRM LEAVE
                ============================================ */
             window.addEventListener("beforeunload", function (e) {
                 if (S.confirmLeave) {
@@ -1256,30 +1334,53 @@
             });
 
             /* ============================================
-               REDUCE ANIMATIONS
+               APPLY — REDUCE ANIMATIONS
                ============================================ */
             function applyCalm() {
                 document.documentElement.style.scrollBehavior = S.calm ? "auto" : "smooth";
-                if (S.calm) {
-                    document.documentElement.classList.add("calm");
-                } else {
-                    document.documentElement.classList.remove("calm");
-                }
+                if (S.calm) document.documentElement.classList.add("calm");
+                else document.documentElement.classList.remove("calm");
             }
             applyCalm();
 
+            /* ============================================
+               APPLY — IDLE HIDE CURSOR
+               ============================================ */
+            var idleTimer = null;
+            function applyIdleHide() {
+                clearTimeout(idleTimer);
+                document.body.style.cursor = "";
+                if (!S.idleHideCursor) return;
+                function reset() {
+                    document.body.style.cursor = "";
+                    clearTimeout(idleTimer);
+                    idleTimer = setTimeout(function () {
+                        document.body.style.cursor = "none";
+                    }, 3000);
+                }
+                document.addEventListener("mousemove", reset);
+                document.addEventListener("mousedown", reset);
+                document.addEventListener("keydown", reset);
+                reset();
+            }
+            applyIdleHide();
+
+            /* ============================================
+               APPLY — OPEN LINKS IN NEW TAB
+               ============================================ */
+            document.addEventListener("click", function (e) {
+                if (!S.openNewTab) return;
+                var a = e.target.closest && e.target.closest("a");
+                if (!a) return;
+                var href = a.getAttribute("href") || "";
+                if (!href || href.startsWith("#")) return;
+                if (a.target === "_blank") return;
+                e.preventDefault();
+                window.open(href, "_blank", "noopener");
+            });
+
         })();
     </script>
-
-    <style>
-        /* Reduced motion class applied by settings */
-        html.calm *,
-        html.calm *::before,
-        html.calm *::after {
-            animation: none !important;
-            transition: none !important;
-        }
-    </style>
 
 </body>
 </html>
