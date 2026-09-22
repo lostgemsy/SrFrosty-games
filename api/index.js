@@ -13,8 +13,12 @@ app.engine("mjs", ejs.__express);
 app.set("view engine", "mjs");
 app.set("views", path.join(ROOT, "views"));
 
-const sql = neon(process.env.DATABASE_URL);
-const redis = Redis.fromEnv();
+const sql = process.env.DATABASE_URL
+  ? neon(process.env.DATABASE_URL)
+  : () => { throw new Error("DATABASE_URL is not configured"); };
+const redis = process.env.UPSTASH_REDIS_REST_URL && process.env.UPSTASH_REDIS_REST_TOKEN
+  ? Redis.fromEnv()
+  : null;
 
 /* ============================================
    DB SETUP (runs once)
@@ -117,6 +121,7 @@ async function ensureDB() {
   dbReady = true;
 }
 app.use(async (req, res, next) => {
+  if (!req.path.startsWith("/api/")) return next();
   try { await ensureDB(); next(); }
   catch (e) { console.error("DB init failed:", e); res.status(500).json({ error: "DB error" }); }
 });
