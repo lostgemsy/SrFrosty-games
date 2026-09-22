@@ -4,8 +4,13 @@
   "description": "An unblocked games site made by HOHOGAMES.",
   "main": "index.mjs",
   "scripts": {
-    "start": "node index.mjs",
+    "start": "node server.js",
+    "start:backend": "node server.js",
+    "dev": "node --watch server.js",
     "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "engines": {
+    "node": ">=18"
   },
   "repository": {
     "type": "git",
