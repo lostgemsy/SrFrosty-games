@@ -10,19 +10,8 @@
       "dest": "/api/index.js"
     },
     {
-      "source": "/",
-      "dest": "/index.html"
-    },
-    {
-      "source": "/(index|games|leaderboard|chat|suggest|settings|game|adminleaderboard|adminSuggested)",
-      "dest": "/$1.html"
-    },
-    {
-      "handle": "filesystem"
-    },
-    {
       "source": "/(.*)",
-      "dest": "/404.html"
+      "dest": "/api/index.js"
     }
   ]
 }

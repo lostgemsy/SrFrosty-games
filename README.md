@@ -11,7 +11,7 @@ npm install
 npm start
 ```
 
-The server runs at `http://localhost:3000`. The browser homepage is still
+The server runs at `http://localhost:3001`. The browser homepage is still
 `index.html`; `index.mjs` is the Node.js application entrypoint that serves it
 and provides the chat and API routes.
 
