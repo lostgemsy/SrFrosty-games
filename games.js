@@ -1,5 +1,5 @@
 (function () {
-    var games = [
+    var games = window.fariusLocalGames || [
         { folder: 'soccer-skills', image: 'soccer-skills.png' },
         { folder: 'deepest-sword', image: 'deepest-sword.jpg' },
         { folder: 'just-fall', image: 'just-fall.jpg' },
@@ -324,7 +324,25 @@
         art.className = 'gl-art';
 
         var image = document.createElement('img');
-        image.src = 'images/' + game.image;
+        var folderPath = 'games/' + encodeURIComponent(game.folder) + '/';
+        var imageSources = [
+            folderPath + 'splash.png',
+            folderPath + 'splash.jpg',
+            folderPath + 'icon.png'
+        ];
+        var logoPath = window.fariusGameLogos && window.fariusGameLogos[game.folder];
+        if (logoPath) {
+            imageSources.push(folderPath + logoPath.split('/').map(encodeURIComponent).join('/'));
+        }
+        if (game.image) imageSources.push('images/' + game.image);
+        imageSources.push('png/gamepad-solid.svg');
+
+        var imageIndex = 0;
+        image.onerror = function () {
+            imageIndex++;
+            if (imageIndex < imageSources.length) image.src = imageSources[imageIndex];
+        };
+        image.src = imageSources[imageIndex];
         image.alt = '';
         image.loading = 'lazy';
         image.decoding = 'async';
