@@ -4,13 +4,19 @@ const { Server } = require("socket.io");
 const path = require("path");
 const fs = require("fs");
 const multer = require("multer");
+const ejs = require("ejs");
 
 const app = express();
 const server = http.createServer(app);
 const io = new Server(server);
 
-const PORT = process.env.PORT || 3000;
+const PORT = Number.parseInt(process.env.PORT || "3001", 10);
+const HOST = process.env.HOST || "0.0.0.0";
 const ROOT = __dirname;
+
+app.engine("mjs", ejs.__express);
+app.set("view engine", "mjs");
+app.set("views", path.join(ROOT, "views"));
 
 // ============================================
 // ONLINE USERS
@@ -789,6 +795,28 @@ app.use("/api", (req, res) => {
 // ============================================
 // STATIC FILES
 // ============================================
+const viewNames = [
+  "index",
+  "chat",
+  "leaderboard",
+  "games",
+  "game",
+  "settings",
+  "suggest",
+  "adminleaderboard",
+  "adminSuggested"
+];
+
+for (const viewName of viewNames) {
+  app.get([`/${viewName}`, `/${viewName}.html`], (req, res) => {
+    res.render(viewName);
+  });
+}
+
+app.get("/", (req, res) => {
+  res.render("index");
+});
+
 app.use(express.static(ROOT));
 app.use("/uploads", express.static(path.join(ROOT, "uploads")));
 
@@ -888,12 +916,25 @@ io.on("connection", (socket) => {
 // ============================================
 // START
 // ============================================
-server.listen(PORT, () => {
+server.on("listening", () => {
+  const address = server.address();
+  const port = typeof address === "object" && address ? address.port : PORT;
   console.log("");
-  console.log("  Farius running on http://localhost:" + PORT);
+  console.log("  Farius running on http://localhost:" + port);
+  console.log("  Bound to " + HOST + ":" + port);
   console.log("  Chat:     /chat.html");
   console.log("  Suggest:  /suggest.html");
   console.log("  Admin:    /adminSuggested.html");
   console.log("  Admin password: " + ADMIN_PASSWORD);
   console.log("");
 });
+
+function shutdown() {
+  console.log("Shutting down Farius...");
+  server.close(() => process.exit(0));
+}
+
+process.on("SIGINT", shutdown);
+process.on("SIGTERM", shutdown);
+
+server.listen({ port: Number.isNaN(PORT) ? 3001 : PORT, host: HOST });

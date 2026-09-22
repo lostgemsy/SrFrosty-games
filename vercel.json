@@ -1,13 +1,28 @@
 {
   "version": 2,
-  "rewrites": [
+  "routes": [
     {
       "source": "/socket.io/(.*)",
-      "destination": "/api/socket"
+      "dest": "/api/socket.js"
     },
     {
       "source": "/api/(.*)",
-      "destination": "/api/index"
+      "dest": "/api/index.js"
+    },
+    {
+      "source": "/(chat|chat\\.html)",
+      "dest": "/api/index.js"
+    },
+    {
+      "source": "/",
+      "dest": "/api/index.js"
+    },
+    {
+      "handle": "filesystem"
+    },
+    {
+      "source": "/(.*)",
+      "dest": "/api/index.js"
     }
   ]
 }

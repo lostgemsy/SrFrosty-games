@@ -4,9 +4,14 @@ const { neon } = require("@neondatabase/serverless");
 const { Redis } = require("@upstash/redis");
 const { put } = require("@vercel/blob");
 const multer = require("multer");
+const ejs = require("ejs");
 
 const app = express();
 const ROOT = path.join(__dirname, "..");
+
+app.engine("mjs", ejs.__express);
+app.set("view engine", "mjs");
+app.set("views", path.join(ROOT, "views"));
 
 const sql = neon(process.env.DATABASE_URL);
 const redis = Redis.fromEnv();
@@ -569,15 +574,32 @@ app.delete("/api/stickers/:id", async (req, res) => {
 /* ============================================
    STATIC FILES + HTML
    ============================================ */
+const viewNames = [
+  "index",
+  "chat",
+  "leaderboard",
+  "games",
+  "game",
+  "settings",
+  "suggest",
+  "adminleaderboard",
+  "adminSuggested"
+];
+
+for (const viewName of viewNames) {
+  app.get([`/${viewName}`, `/${viewName}.html`], (req, res) => {
+    res.render(viewName);
+  });
+}
+
+app.get("/", (req, res) => {
+  res.render("index");
+});
+
 app.use(express.static(ROOT));
 
 app.get("*", (req, res) => {
-  const filePath = path.join(ROOT, req.path);
-  const fs = require("fs");
-  if (fs.existsSync(filePath) && fs.statSync(filePath).isFile()) {
-    return res.sendFile(filePath);
-  }
-  res.sendFile(path.join(ROOT, "index.html"));
+  res.render("index");
 });
 
 module.exports = app;

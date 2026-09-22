@@ -1,0 +1,10 @@
+{
+  "forwardPorts": [3001],
+  "portsAttributes": {
+    "3001": {
+      "label": "Farius",
+      "onAutoForward": "openBrowser",
+      "visibility": "public"
+    }
+  }
+}
