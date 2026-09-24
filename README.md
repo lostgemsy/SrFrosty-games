@@ -1,41 +1,51 @@
-# Farius
+# Yumix Games
 
-An unblocked games site made by HOHOGAMES.
+A clean white-theme games site made for Vercel. No games are included, you add your own.
 
-## Running locally
-
-Install the server dependencies and start the Express and Socket.IO server:
-
-```sh
-npm install
-npm start
+## Folder layout
+```
+index.html            home page (sliding credits + Message the Owner button)
+games.html            game library with search
+game.html             plays a game (?g=folder)
+games.js              <-- the list of your games
+sendMSGtoowner.html   visitors send messages to you
+viewersMsg.html       YOUR inbox (password protected)
+Games/                one folder per game (each needs an index.html)
+images/               the logo png/jpg of each game
+assets/               style.css, backgrounds/, logos/, slider/
+api/                  Vercel serverless functions for the messages
 ```
 
-The server runs at `http://localhost:3001`. The browser homepage is still
-`index.html`; `index.mjs` is the Node.js application entrypoint that serves it
-and provides the chat and API routes.
+## Add a game
+1. Copy the game's folder into `Games/` (example: `Games/slope/index.html`).
+2. Put its logo in `images/` (example: `images/slope.png`).
+3. Add a line in `games.js`:
+   `{ name: 'Slope', folder: 'slope', image: 'slope.png' },`
 
-## Deploying
+Folder and file names are case-sensitive on Vercel: `Slope` and `slope` are different.
 
-this site is completely static, making it really easy to deploy!! :D <br>
-use any static hosting provider or click a button below!! <br>
-[![Remix on Glitch](https://binbashbanana.github.io/deploy-buttons/buttons/remade/glitch.svg)](https://glitch.com/edit/#!/import/github/truffled/truffled.github.io/) 
-[![Run on Replit](https://binbashbanana.github.io/deploy-buttons/buttons/remade/replit.svg)](https://replit.com/github/truffled/truffled.github.io/)
-[![Deploy to Vercel](https://binbashbanana.github.io/deploy-buttons/buttons/remade/vercel.svg)](https://vercel.com/new/clone?repository-url=https://github.com/truffled/truffled.github.io/)
-[![Deploy to Netlify](https://binbashbanana.github.io/deploy-buttons/buttons/remade/netlify.svg)](https://app.netlify.com/start/deploy?repository=https://github.com/truffled/truffled.github.io/)
-[![Deploy to Render](https://binbashbanana.github.io/deploy-buttons/buttons/remade/render.svg)](https://render.com/deploy?repo=https://github.com/truffled/truffled.github.io/)
-[![Deploy to Koyeb](https://binbashbanana.github.io/deploy-buttons/buttons/remade/koyeb.svg)](https://app.koyeb.com/deploy?type=git&repository=github.com/truffled/truffled.github.io/&branch=main&name=truffled)
+## Add the sliding credit images (home page)
+Put the pngs in `assets/slider/`, then list them in the `SLIDES` array at the bottom of `index.html`:
+`'helper1.png'` or `{src:'helper2.png', name:'Alex'}`. It loops forever on its own.
 
-## Technologies
+## Run it locally
+Only the messages need a server, so use Vercel's dev server:
+```
+npm i -g vercel
+vercel dev
+```
+Or, to just look at the pages: `npx serve .` (messages won't work in this mode).
 
-* [TIW](https://github.com/KwazyMotoo/TIW-Static) - static proxy code
-* [3kh0](https://gitlab.com/3kh0/3kh0-assets) - game files
-* [Selenite](https://gitlab.com/skysthelimit.dev/selenite) - more game files
+## Deploy to Vercel
+1. Push this folder to a GitHub repo.
+2. On vercel.com choose **Add New > Project**, import the repo, and click Deploy (no build settings needed).
+3. Set up the message inbox (once):
+   - In your Vercel project open **Storage** (or the Marketplace) and add **Upstash Redis** (free plan is fine). This adds the database variables automatically.
+   - Open **Settings > Environment Variables** and add `OWNER_PASSWORD` with a password only you know.
+   - **Redeploy** so the new variables load.
+4. Visit `yourdomain.com/viewersMsg.html`, enter your password, and read your messages. You can delete one or clear all.
 
-## Acknowledgments
-
-* [bog](https://github.com/aukak) - main developer, made most of the site
-* [szvy](https://github.com/szvy) - other developer, made the truffled account, also emotional support
-
-## License
-Farius is under the MIT License. Read more [here](https://choosealicense.com/licenses/mit/).
+## Notes
+- Visitors send from `sendMSGtoowner.html`. Messages are capped at 500 characters and the newest 500 are kept.
+- Game files can be big. If Vercel complains about size, host the biggest games somewhere else and point to them.
+- Change the colors in `assets/style.css` (the `--acc` variable is the purple accent).

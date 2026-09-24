@@ -1,17 +1,8 @@
 {
-  "version": 2,
-  "routes": [
-    {
-      "source": "/socket.io/(.*)",
-      "dest": "/api/socket.js"
-    },
-    {
-      "source": "/api/(.*)",
-      "dest": "/api/index.js"
-    },
-    {
-      "source": "/(.*)",
-      "dest": "/api/index.js"
-    }
-  ]
+  "framework": null,
+  "installCommand": "npm install",
+  "buildCommand": "npm run build",
+  "outputDirectory": ".",
+  "cleanUrls": true,
+  "trailingSlash": false
 }
