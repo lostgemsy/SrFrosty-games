@@ -1,54 +1,8 @@
 {
-  "$schema": "https://openapi.vercel.sh/vercel.json",
   "framework": null,
   "installCommand": "npm install",
   "buildCommand": "npm run build",
   "outputDirectory": ".",
   "cleanUrls": true,
-  "trailingSlash": false,
-  "headers": [
-    {
-      "source": "/(.*)",
-      "headers": [
-        { "key": "X-Content-Type-Options", "value": "nosniff" },
-        { "key": "X-Frame-Options", "value": "SAMEORIGIN" },
-        { "key": "Referrer-Policy", "value": "strict-origin-when-cross-origin" },
-        { "key": "Permissions-Policy", "value": "camera=*, microphone=*, gamepad=*, fullscreen=*, autoplay=*" }
-      ]
-    },
-    {
-      "source": "/images/(.*)",
-      "headers": [
-        { "key": "Cache-Control", "value": "public, max-age=604800, stale-while-revalidate=86400" }
-      ]
-    },
-    {
-      "source": "/png/(.*)",
-      "headers": [
-        { "key": "Cache-Control", "value": "public, max-age=604800, stale-while-revalidate=86400" }
-      ]
-    },
-    {
-      "source": "/games/(.*)",
-      "headers": [
-        { "key": "Cache-Control", "value": "public, max-age=3600, stale-while-revalidate=86400" }
-      ]
-    },
-    {
-      "source": "/(.*).(js|css|woff2|woff|ttf|svg|ico)",
-      "headers": [
-        { "key": "Cache-Control", "value": "public, max-age=604800, stale-while-revalidate=86400" }
-      ]
-    },
-    {
-      "source": "/(.*).html",
-      "headers": [
-        { "key": "Cache-Control", "value": "public, max-age=0, must-revalidate" }
-      ]
-    }
-  ],
-  "rewrites": [
-    { "source": "/games", "destination": "/index.html" },
-    { "source": "/games/(.*)", "destination": "/games/$1" }
-  ]
+  "trailingSlash": false
 }
