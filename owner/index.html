@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Owner · Polls — Farius Games</title>
+<meta name="robots" content="noindex, nofollow">
+<link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+<div class="admin-shell">
+  <div class="admin-card">
+    <h1>Poll manager</h1>
+
+    <div class="field">
+      <label>Owner password</label>
+      <input id="pw" type="password" placeholder="Password">
+    </div>
+
+    <div id="current-box" style="margin-bottom:22px; display:none;">
+      <div class="field"><label>Currently live</label></div>
+      <div id="current-poll" style="font-size:14px; color:var(--ink-soft);"></div>
+      <button id="close-poll" class="btn ghost" style="margin-top:10px;">Close this poll</button>
+    </div>
+
+    <form id="poll-form">
+      <div class="field">
+        <label>Question</label>
+        <input id="question" type="text" placeholder="What should we add next?">
+      </div>
+
+      <div class="field">
+        <label>Options (mark the correct one)</label>
+        <div id="options"></div>
+        <button type="button" id="add-option" class="btn ghost" style="margin-top:4px; padding:6px 14px; font-size:13px;">+ Add option</button>
+      </div>
+
+      <button type="submit" class="btn">Publish poll</button>
+      <div id="msg" class="msg"></div>
+    </form>
+  </div>
+</div>
+
+<script>
+const pwEl = document.getElementById('pw');
+pwEl.value = sessionStorage.getItem('farius-admin-pw') || '';
+pwEl.addEventListener('change', () => sessionStorage.setItem('farius-admin-pw', pwEl.value));
+
+const optionsEl = document.getElementById('options');
+function addOption(checked = false) {
+  const row = document.createElement('div');
+  row.className = 'opt-row';
+  row.innerHTML = `
+    <input type="radio" name="correct" ${checked ? 'checked' : ''}>
+    <input type="text" placeholder="Option text">
+    <button type="button" class="btn ghost" style="padding:4px 10px; font-size:12px;">✕</button>
+  `;
+  row.querySelector('button').addEventListener('click', () => row.remove());
+  optionsEl.appendChild(row);
+}
+addOption(true);
+addOption();
+document.getElementById('add-option').addEventListener('click', () => addOption());
+
+async function loadCurrent() {
+  const res = await fetch('/api/polls');
+  const data = await res.json();
+  const box = document.getElementById('current-box');
+  if (!data.poll) { box.style.display = 'none'; return; }
+  box.style.display = 'block';
+  const totalVotes = data.poll.options.reduce((s, o) => s + (o.votes || 0), 0);
+  document.getElementById('current-poll').innerHTML =
+    `<strong>${data.poll.question}</strong><br>` +
+    data.poll.options.map(o => `${o.text} — ${o.votes || 0} vote(s)${o.id === data.poll.correctOptionId ? ' (correct)' : ''}`).join('<br>') +
+    `<br>Total: ${totalVotes}`;
+}
+loadCurrent();
+
+document.getElementById('close-poll').addEventListener('click', async () => {
+  await fetch('/api/polls', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ action: 'close', password: pwEl.value }),
+  });
+  loadCurrent();
+});
+
+document.getElementById('poll-form').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const msg = document.getElementById('msg');
+  msg.textContent = '';
+  const question = document.getElementById('question').value.trim();
+  const rows = [...optionsEl.querySelectorAll('.opt-row')];
+  const options = rows.map(r => r.querySelector('input[type="text"]').value.trim());
+  const correctOptionIndex = rows.findIndex(r => r.querySelector('input[type="radio"]').checked);
+
+  if (!question || options.filter(Boolean).length < 2 || correctOptionIndex === -1) {
+    msg.textContent = 'Add a question, at least 2 options, and mark the correct one.';
+    msg.className = 'msg err';
+    return;
+  }
+
+  const res = await fetch('/api/polls', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ password: pwEl.value, question, options, correctOptionIndex }),
+  });
+
+  if (res.status === 401) {
+    msg.textContent = 'Wrong password.';
+    msg.className = 'msg err';
+    return;
+  }
+  if (!res.ok) {
+    msg.textContent = 'Something went wrong.';
+    msg.className = 'msg err';
+    return;
+  }
+  msg.textContent = 'Poll published — it’s live on the homepage now.';
+  msg.className = 'msg ok';
+  loadCurrent();
+});
+</script>
+</body>
+</html>

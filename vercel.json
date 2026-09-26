@@ -1,8 +1,6 @@
 {
-  "framework": null,
-  "installCommand": "npm install",
-  "buildCommand": "npm run build",
-  "outputDirectory": ".",
-  "cleanUrls": true,
-  "trailingSlash": false
+  "rewrites": [
+    { "source": "/OwnerPolls", "destination": "/owner/index.html" },
+    { "source": "/AdminAnnouncements", "destination": "/admin/index.html" }
+  ]
 }

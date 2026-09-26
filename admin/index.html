@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Admin · Announcements — Farius Games</title>
+<meta name="robots" content="noindex, nofollow">
+<link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+<div class="admin-shell">
+  <div class="admin-card">
+    <h1>Announcement manager</h1>
+
+    <div class="field">
+      <label>Admin password</label>
+      <input id="pw" type="password" placeholder="Password">
+    </div>
+
+    <div id="current-box" style="margin-bottom:22px; display:none;">
+      <div class="field"><label>Currently live</label></div>
+      <div id="current-ann" style="font-size:14px; color:var(--ink-soft);"></div>
+      <button id="clear-ann" class="btn ghost" style="margin-top:10px;">Clear now</button>
+    </div>
+
+    <form id="ann-form">
+      <div class="field">
+        <label>Announcement text</label>
+        <textarea id="text" rows="3" placeholder="Servers will be down for 5 minutes at 8pm…"></textarea>
+      </div>
+      <div class="field">
+        <label>Show for how many seconds</label>
+        <input id="duration" type="number" min="1" value="10">
+      </div>
+      <button type="submit" class="btn">Publish announcement</button>
+      <div id="msg" class="msg"></div>
+    </form>
+  </div>
+</div>
+
+<script>
+const pwEl = document.getElementById('pw');
+pwEl.value = sessionStorage.getItem('farius-admin-pw') || '';
+pwEl.addEventListener('change', () => sessionStorage.setItem('farius-admin-pw', pwEl.value));
+
+async function loadCurrent() {
+  const res = await fetch('/api/announcements');
+  const data = await res.json();
+  const box = document.getElementById('current-box');
+  if (!data.announcement) { box.style.display = 'none'; return; }
+  box.style.display = 'block';
+  const secsLeft = Math.max(0, Math.round((data.announcement.expiresAt - Date.now()) / 1000));
+  document.getElementById('current-ann').innerHTML =
+    `“${data.announcement.text}”<br>${secsLeft}s left on screen`;
+}
+loadCurrent();
+setInterval(loadCurrent, 5000);
+
+document.getElementById('clear-ann').addEventListener('click', async () => {
+  await fetch('/api/announcements', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ action: 'clear', password: pwEl.value }),
+  });
+  loadCurrent();
+});
+
+document.getElementById('ann-form').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const msg = document.getElementById('msg');
+  msg.textContent = '';
+  const text = document.getElementById('text').value.trim();
+  const durationSeconds = Number(document.getElementById('duration').value);
+
+  if (!text || !durationSeconds || durationSeconds <= 0) {
+    msg.textContent = 'Add announcement text and a positive duration.';
+    msg.className = 'msg err';
+    return;
+  }
+
+  const res = await fetch('/api/announcements', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ password: pwEl.value, text, durationSeconds }),
+  });
+
+  if (res.status === 401) {
+    msg.textContent = 'Wrong password.';
+    msg.className = 'msg err';
+    return;
+  }
+  if (!res.ok) {
+    msg.textContent = 'Something went wrong.';
+    msg.className = 'msg err';
+    return;
+  }
+  msg.textContent = 'Announcement published — it will pop up for visitors now.';
+  msg.className = 'msg ok';
+  loadCurrent();
+});
+</script>
+</body>
+</html>

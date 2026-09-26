@@ -1,10 +1,9 @@
 {
-  "name": "yumix-games",
+  "name": "farius-games",
   "version": "1.0.0",
   "private": true,
-  "scripts": {
-    "dev": "npx serve . -l 3000",
-    "build": "echo 'Static site: no build step required'",
-    "start": "npx serve . -l 3000"
+  "description": "Farius Games — unblocked games site with a live poll and announcement system.",
+  "dependencies": {
+    "@vercel/kv": "^2.0.0"
   }
 }

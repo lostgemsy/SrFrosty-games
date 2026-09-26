@@ -1,0 +1,10 @@
+This is a placeholder.
+
+When you deploy, this /images folder should contain your real game
+thumbnail images (the ones already in your GitHub Codespace) — not
+this file.
+
+Each image path referenced in games.js should point to a file in here,
+e.g. images/retro-bowl.png
+
+Delete this file once your real /images folder is in place.

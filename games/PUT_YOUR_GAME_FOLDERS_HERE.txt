@@ -1,0 +1,9 @@
+This is a placeholder.
+
+When you deploy, this /games folder should contain your real 286 game
+folders (the ones already in your GitHub Codespace) — not this file.
+
+Each game is expected to live at:
+  /games/<game-folder>/index.html
+
+Delete this file once your real /games folder is in place.
