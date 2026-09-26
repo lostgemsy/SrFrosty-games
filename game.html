@@ -1,0 +1,502 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Farius Games</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+  <style>
+    /* ============================================
+       RESET & BASE
+       ============================================ */
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html, body {
+      width: 100%;
+      height: 100%;
+    }
+
+    body.player-page {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: #050505;
+      color: #f5f5f5;
+      min-height: 100vh;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      position: relative;
+    }
+
+    /* ============================================
+       AMBIENT BACKGROUND
+       ============================================ */
+    body.player-page::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+      pointer-events: none;
+      background:
+        radial-gradient(circle at 50% -10%, rgba(255, 255, 255, 0.05) 0%, transparent 45%),
+        radial-gradient(circle at 15% 90%, rgba(255, 255, 255, 0.02) 0%, transparent 40%),
+        radial-gradient(circle at 85% 10%, rgba(255, 255, 255, 0.02) 0%, transparent 40%);
+    }
+
+    body.player-page::after {
+      content: '';
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+      pointer-events: none;
+      opacity: 0.028;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+    }
+
+    /* ============================================
+       PLAYERBAR (top navigation)
+       ============================================ */
+    .playerbar {
+      position: relative;
+      z-index: 10;
+      flex: none;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      padding: 16px 32px;
+      background: rgba(5, 5, 5, 0.75);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+      backdrop-filter: blur(24px) saturate(140%);
+      -webkit-backdrop-filter: blur(24px) saturate(140%);
+      animation: barIn 0.6s cubic-bezier(.2, .8, .2, 1) both;
+    }
+
+    @keyframes barIn {
+      from { opacity: 0; transform: translateY(-20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .brand {
+      font-size: 15px;
+      font-weight: 900;
+      letter-spacing: 0.02em;
+      color: rgba(255, 255, 255, 0.6);
+      text-decoration: none;
+      transition: color 0.25s ease;
+      flex: none;
+    }
+
+    .brand span {
+      color: #fff;
+      margin-left: 2px;
+    }
+
+    .brand:hover {
+      color: #fff;
+    }
+
+    .playerbar > div {
+      display: flex;
+      gap: 8px;
+    }
+
+    .playerbar button {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 20px;
+      border-radius: 12px;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1.5px solid rgba(255, 255, 255, 0.1);
+      color: rgba(255, 255, 255, 0.8);
+      font-family: inherit;
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: -0.005em;
+      cursor: pointer;
+      transition: all 0.22s cubic-bezier(.2, .8, .2, 1);
+    }
+
+    .playerbar button:hover {
+      background: rgba(255, 255, 255, 0.12);
+      border-color: rgba(255, 255, 255, 0.25);
+      color: #fff;
+      transform: translateY(-2px);
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
+    }
+
+    .playerbar button:active {
+      transform: translateY(0) scale(0.97);
+    }
+
+    #back {
+      font-weight: 800;
+    }
+
+    /* ============================================
+       PLAYER MAIN
+       ============================================ */
+    .player {
+      position: relative;
+      z-index: 2;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      padding: 24px 32px 28px;
+      min-height: 0;
+      gap: 20px;
+    }
+
+    /* ============================================
+       PLAYER HEADER
+       ============================================ */
+    .player-head {
+      flex: none;
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      gap: 20px;
+      padding: 4px 4px 0;
+      animation: headIn 0.7s 0.1s cubic-bezier(.2, .8, .2, 1) both;
+    }
+
+    @keyframes headIn {
+      from { opacity: 0; transform: translateY(15px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 10.5px;
+      font-weight: 800;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: rgba(255, 255, 255, 0.4);
+      margin-bottom: 8px;
+    }
+
+    .eyebrow::before {
+      content: '';
+      width: 20px;
+      height: 1px;
+      background: rgba(255, 255, 255, 0.3);
+    }
+
+    #title {
+      font-size: clamp(1.6rem, 3.5vw, 2.4rem);
+      font-weight: 900;
+      letter-spacing: -0.045em;
+      color: #fff;
+      line-height: 1.05;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      max-width: 100%;
+    }
+
+    #status {
+      flex: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 16px;
+      border-radius: 999px;
+      font-size: 11px;
+      font-weight: 800;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1.5px solid rgba(255, 255, 255, 0.1);
+      color: rgba(255, 255, 255, 0.55);
+      transition: all 0.3s ease;
+    }
+
+    #status::before {
+      content: '';
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: currentColor;
+      box-shadow: 0 0 8px currentColor;
+      animation: statusPulse 1.6s ease-in-out infinite;
+    }
+
+    @keyframes statusPulse {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.4; transform: scale(0.75); }
+    }
+
+    /* Status variants — apply if player.js sets a class */
+    #status.ready,
+    #status.loaded,
+    #status.playing {
+      color: #4ade80;
+      border-color: rgba(74, 222, 128, 0.3);
+      background: rgba(74, 222, 128, 0.08);
+    }
+
+    #status.error,
+    #status.failed {
+      color: #f87171;
+      border-color: rgba(248, 113, 113, 0.3);
+      background: rgba(248, 113, 113, 0.08);
+    }
+
+    /* ============================================
+       FRAME WRAP
+       ============================================ */
+    .frame-wrap {
+      position: relative;
+      flex: 1;
+      min-height: 0;
+      border-radius: 20px;
+      overflow: hidden;
+      background: #000;
+      border: 1.5px solid rgba(255, 255, 255, 0.09);
+      box-shadow:
+        0 30px 80px rgba(0, 0, 0, 0.55),
+        0 0 60px rgba(255, 255, 255, 0.02),
+        inset 0 1px 0 rgba(255, 255, 255, 0.04);
+      animation: frameIn 0.7s 0.18s cubic-bezier(.2, .8, .2, 1) both;
+    }
+
+    @keyframes frameIn {
+      from { opacity: 0; transform: translateY(20px) scale(0.985); }
+      to { opacity: 1; transform: translateY(0) scale(1); }
+    }
+
+    /* Top highlight on the frame */
+    .frame-wrap::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 1px;
+      background: linear-gradient(
+        90deg,
+        transparent,
+        rgba(255, 255, 255, 0.22),
+        transparent
+      );
+      z-index: 3;
+      pointer-events: none;
+    }
+
+    .frame-wrap::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      z-index: 2;
+      box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.03);
+      border-radius: inherit;
+    }
+
+    #gameFrame {
+      width: 100%;
+      height: 100%;
+      border: 0;
+      background: #000;
+      display: block;
+      position: relative;
+      z-index: 1;
+      opacity: 0;
+      transition: opacity 0.5s ease;
+    }
+
+    #gameFrame.loaded,
+    #gameFrame[data-loaded="true"] {
+      opacity: 1;
+    }
+
+    /* ============================================
+       LOAD ERROR
+       ============================================ */
+    .load-error {
+      position: absolute;
+      inset: 0;
+      z-index: 5;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 14px;
+      padding: 32px;
+      background: rgba(5, 5, 5, 0.96);
+      text-align: center;
+      animation: errIn 0.4s ease both;
+    }
+
+    .load-error[hidden] {
+      display: none;
+    }
+
+    @keyframes errIn {
+      from { opacity: 0; transform: scale(0.97); }
+      to { opacity: 1; transform: scale(1); }
+    }
+
+    .load-error h2 {
+      font-size: 1.5rem;
+      font-weight: 900;
+      letter-spacing: -0.03em;
+      color: #fff;
+      line-height: 1.2;
+    }
+
+    .load-error p {
+      max-width: 440px;
+      font-size: 0.9rem;
+      font-weight: 500;
+      color: rgba(255, 255, 255, 0.45);
+      line-height: 1.55;
+    }
+
+    .load-error a {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      margin-top: 12px;
+      padding: 13px 26px;
+      border-radius: 13px;
+      background: #fff;
+      color: #000;
+      text-decoration: none;
+      font-size: 13.5px;
+      font-weight: 800;
+      letter-spacing: -0.005em;
+      border: 1.5px solid #fff;
+      transition: all 0.25s cubic-bezier(.2, .8, .2, 1);
+      box-shadow: 0 10px 30px rgba(255, 255, 255, 0.1);
+    }
+
+    .load-error a:hover {
+      background: #e5e5e5;
+      border-color: #e5e5e5;
+      transform: translateY(-3px);
+      box-shadow: 0 18px 40px rgba(255, 255, 255, 0.18);
+    }
+
+    /* ============================================
+       RESPONSIVE
+       ============================================ */
+    @media (max-width: 720px) {
+      .playerbar {
+        padding: 12px 16px;
+      }
+
+      .brand {
+        font-size: 13px;
+      }
+
+      .playerbar button {
+        padding: 9px 14px;
+        font-size: 12px;
+      }
+
+      .player {
+        padding: 16px 14px 20px;
+        gap: 14px;
+      }
+
+      #title {
+        font-size: 1.35rem;
+      }
+
+      #status {
+        padding: 6px 12px;
+        font-size: 10px;
+      }
+
+      .frame-wrap {
+        border-radius: 14px;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .playerbar button {
+        padding: 8px 12px;
+        font-size: 11.5px;
+        border-radius: 10px;
+      }
+
+      #fullscreen {
+        /* Shorter label space on tiny screens */
+        font-size: 0;
+        padding: 8px 10px;
+      }
+
+      #fullscreen::after {
+        content: '⛶';
+        font-size: 16px;
+        line-height: 1;
+      }
+
+      #back {
+        font-size: 11.5px;
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation-duration: 0.001ms !important;
+        transition-duration: 0.001ms !important;
+      }
+    }
+  </style>
+</head>
+<body class="player-page">
+
+  <header class="playerbar">
+    <a class="brand" href="/">FARIUS<span>GAMES</span></a>
+    <div>
+      <button id="back">← Back</button>
+      <button id="fullscreen">Fullscreen</button>
+    </div>
+  </header>
+
+  <main class="player">
+
+    <div class="player-head">
+      <div>
+        <p class="eyebrow">NOW PLAYING</p>
+        <h1 id="title">Loading…</h1>
+      </div>
+      <span id="status">LOADING</span>
+    </div>
+
+    <div class="frame-wrap">
+      <iframe
+        id="gameFrame"
+        allow="autoplay; fullscreen; gamepad; microphone; camera; clipboard-read; clipboard-write"
+        allowfullscreen
+      ></iframe>
+
+      <div id="loadError" class="load-error" hidden>
+        <h2>Game file not found</h2>
+        <p id="errorText"></p>
+        <a href="/">Return to library</a>
+      </div>
+    </div>
+
+  </main>
+
+  <script src="games.js"></script>
+  <script src="player.js"></script>
+
+</body>
+</html>

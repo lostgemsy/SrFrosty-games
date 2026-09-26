@@ -1,0 +1,780 @@
+/* =========================================================
+   FARIUS GAMES — styles.css
+   Light theme for home + admin, dark theme for the player.
+   ========================================================= */
+
+/* ------------------------------------------
+   Design tokens
+   ------------------------------------------ */
+:root {
+  --bg: #f5f5f3;
+  --panel: #fff;
+  --ink: #0b0b0b;
+  --muted: #6e6e6e;
+  --line: #d9d9d5;
+  --soft: #ecece8;
+  --dark: #0b0b0b;
+  --dark-line: #292929;
+
+  --radius-sm: 4px;
+  --radius-md: 7px;
+  --radius-lg: 12px;
+  --radius-pill: 99px;
+
+  --shadow-lg: 0 30px 100px rgba(0, 0, 0, 0.2);
+
+  --ease: cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+/* ------------------------------------------
+   Reset
+   ------------------------------------------ */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--ink);
+  font-family: Inter, ui-sans-serif, system-ui, -apple-system,
+    BlinkMacSystemFont, "Segoe UI", sans-serif;
+  min-height: 100vh;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+h1,
+h2,
+h3 {
+  margin: 0;
+}
+
+code {
+  background: #e8e8e5;
+  padding: 2px 6px;
+  border-radius: var(--radius-sm);
+  font-family: ui-monospace, "SF Mono", "Fira Code", monospace;
+  font-size: 0.92em;
+}
+
+/* ------------------------------------------
+   Decorative background
+   ------------------------------------------ */
+.ambient {
+  position: fixed;
+  inset: -20%;
+  z-index: -2;
+  pointer-events: none;
+  background:
+    radial-gradient(circle at 20% 10%, #fff 0 10%, transparent 35%),
+    radial-gradient(circle at 90% 70%, #ddd 0, transparent 30%);
+}
+
+.noise {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  opacity: 0.035;
+  pointer-events: none;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 180 180' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+/* ------------------------------------------
+   Top bars (shared)
+   ------------------------------------------ */
+.topbar,
+.playerbar {
+  height: 72px;
+  padding: 0 clamp(20px, 5vw, 72px);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid var(--line);
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+.brand {
+  font-weight: 950;
+  letter-spacing: -0.06em;
+  color: var(--ink);
+  text-decoration: none;
+  font-size: 20px;
+}
+
+.brand span {
+  font-weight: 350;
+  margin-left: 4px;
+}
+
+.nav-actions {
+  display: flex;
+  gap: 20px;
+  align-items: center;
+}
+
+.nav-actions a,
+.nav-actions button,
+.playerbar button {
+  border: 0;
+  background: none;
+  color: var(--ink);
+  font: inherit;
+  cursor: pointer;
+  text-decoration: none;
+}
+
+.nav-actions button {
+  border: 1px solid var(--ink);
+  padding: 9px 14px;
+  border-radius: var(--radius-pill);
+  transition: background 0.2s var(--ease), color 0.2s var(--ease);
+}
+
+.nav-actions button:hover {
+  background: var(--ink);
+  color: var(--panel);
+}
+
+/* ------------------------------------------
+   Hero
+   ------------------------------------------ */
+.hero {
+  max-width: 1400px;
+  margin: auto;
+  min-height: 560px;
+  padding: clamp(70px, 10vw, 140px) clamp(20px, 5vw, 72px);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  overflow: hidden;
+}
+
+.hero h1 {
+  font-size: clamp(58px, 9vw, 135px);
+  line-height: 0.83;
+  letter-spacing: -0.08em;
+  margin: 15px 0 35px;
+  animation: rise 0.8s var(--ease) both;
+}
+
+.hero h1 em {
+  font-style: normal;
+  color: #888;
+}
+
+.sub {
+  max-width: 560px;
+  color: var(--muted);
+  font-size: 17px;
+  line-height: 1.7;
+}
+
+.eyebrow {
+  font-size: 11px;
+  letter-spacing: 0.2em;
+  font-weight: 800;
+  color: #777;
+  margin: 0;
+}
+
+.hero-stats {
+  display: flex;
+  gap: 10px;
+  align-items: baseline;
+  margin-top: 30px;
+}
+
+.hero-stats strong {
+  font-size: 32px;
+  font-variant-numeric: tabular-nums;
+}
+
+.hero-stats span {
+  color: #777;
+}
+
+.hero-mark {
+  font-size: clamp(180px, 30vw, 430px);
+  font-weight: 950;
+  line-height: 0.7;
+  opacity: 0.045;
+  transform: rotate(-8deg);
+  user-select: none;
+  pointer-events: none;
+}
+
+/* ------------------------------------------
+   Toolbar + search
+   ------------------------------------------ */
+.toolbar {
+  max-width: 1400px;
+  margin: auto;
+  padding: 50px clamp(20px, 5vw, 72px) 20px;
+  display: flex;
+  justify-content: space-between;
+  gap: 25px;
+  align-items: end;
+  border-top: 1px solid var(--line);
+}
+
+.toolbar h2,
+h2 {
+  font-size: 36px;
+  letter-spacing: -0.05em;
+  margin: 6px 0;
+}
+
+.search {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  border-bottom: 1px solid var(--ink);
+  padding: 10px 0;
+  min-width: min(380px, 45vw);
+}
+
+.search input {
+  border: 0;
+  background: transparent;
+  outline: 0;
+  font: inherit;
+  width: 100%;
+  color: var(--ink);
+}
+
+.search input::placeholder {
+  color: #aaa;
+}
+
+.filter-line {
+  max-width: 1400px;
+  margin: auto;
+  padding: 0 clamp(20px, 5vw, 72px) 22px;
+  color: #777;
+  font-size: 13px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.filter-line button {
+  border: 0;
+  background: none;
+  text-decoration: underline;
+  cursor: pointer;
+  color: inherit;
+  font: inherit;
+}
+
+/* ------------------------------------------
+   Game grid
+   ------------------------------------------ */
+.game-grid {
+  max-width: 1400px;
+  margin: auto;
+  padding: 0 clamp(20px, 5vw, 72px) 100px;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
+  gap: 18px;
+}
+
+.game-card {
+  color: var(--ink);
+  text-decoration: none;
+  animation: rise 0.55s var(--ease) var(--delay, 0ms) both;
+}
+
+.game-art {
+  aspect-ratio: 1.35;
+  border: 1px solid var(--line);
+  background: #e9e9e6;
+  position: relative;
+  overflow: hidden;
+}
+
+.game-art img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  transition: transform 0.45s var(--ease), filter 0.45s var(--ease);
+}
+
+.game-card:hover .game-art img {
+  transform: scale(1.05);
+  filter: grayscale(1) contrast(1.08);
+}
+
+.play {
+  position: absolute;
+  inset: auto 10px 10px auto;
+  background: #fff;
+  color: #000;
+  padding: 8px 12px;
+  font-size: 10px;
+  font-weight: 900;
+  letter-spacing: 0.12em;
+  transform: translateY(45px);
+  transition: transform 0.25s var(--ease);
+}
+
+.game-card:hover .play {
+  transform: none;
+}
+
+.game-card h3 {
+  font-size: 14px;
+  margin: 11px 2px;
+  font-weight: 700;
+}
+
+.empty {
+  grid-column: 1 / -1;
+  padding: 80px;
+  text-align: center;
+  color: #777;
+}
+
+/* ------------------------------------------
+   Poll modal
+   ------------------------------------------ */
+.poll {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.55);
+  z-index: 100;
+  display: grid;
+  place-items: center;
+  padding: 20px;
+}
+
+.poll[hidden] {
+  display: none;
+}
+
+.poll-card,
+.announcement {
+  background: var(--panel);
+  max-width: 620px;
+  width: 100%;
+  padding: 38px;
+  box-shadow: var(--shadow-lg);
+  position: relative;
+  border-radius: 2px;
+}
+
+.poll-option {
+  width: 100%;
+  padding: 15px 18px;
+  text-align: left;
+  background: var(--panel);
+  border: 1px solid var(--line);
+  margin-top: 9px;
+  cursor: pointer;
+  font: inherit;
+  color: var(--ink);
+  transition: border-color 0.2s var(--ease), background 0.2s var(--ease);
+}
+
+.poll-option:hover:not(:disabled) {
+  border-color: #000;
+}
+
+.poll-option:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.x {
+  position: absolute;
+  right: 14px;
+  top: 10px;
+  border: 0;
+  background: none;
+  font-size: 25px;
+  line-height: 1;
+  cursor: pointer;
+  color: inherit;
+  padding: 4px 8px;
+}
+
+.x:hover {
+  color: #000;
+}
+
+.poll-result {
+  min-height: 20px;
+  color: #555;
+}
+
+/* ------------------------------------------
+   Announcement
+   ------------------------------------------ */
+.announcement-slot {
+  position: fixed;
+  inset: 0;
+  z-index: 90;
+  background: rgba(0, 0, 0, 0.75);
+  display: grid;
+  place-items: center;
+  padding: 20px;
+}
+
+.announcement {
+  animation: pop 0.45s var(--ease) both;
+}
+
+.announcement p:not(.eyebrow) {
+  line-height: 1.7;
+  color: #444;
+}
+
+.announcement h2 {
+  font-size: 28px;
+  letter-spacing: -0.03em;
+  margin: 8px 0 14px;
+}
+
+/* ------------------------------------------
+   Footer
+   ------------------------------------------ */
+footer {
+  text-align: center;
+  padding: 35px;
+  border-top: 1px solid var(--line);
+  font-size: 10px;
+  letter-spacing: 0.18em;
+  color: #888;
+}
+
+/* =========================================================
+   PLAYER PAGE (dark theme)
+   ========================================================= */
+.player-page {
+  background: var(--dark);
+  color: #fff;
+}
+
+.playerbar {
+  background: rgba(11, 11, 11, 0.87);
+  border-color: var(--dark-line);
+}
+
+.playerbar .brand {
+  color: #fff;
+}
+
+.playerbar button {
+  color: #fff;
+  border: 1px solid #444;
+  padding: 8px 14px;
+  margin-left: 8px;
+  border-radius: var(--radius-md);
+  transition: background 0.2s var(--ease), border-color 0.2s var(--ease);
+}
+
+.playerbar button:hover {
+  background: rgba(255, 255, 255, 0.08);
+  border-color: #666;
+}
+
+.player {
+  height: calc(100vh - 72px);
+  padding: 20px clamp(12px, 3vw, 40px);
+  display: flex;
+  flex-direction: column;
+}
+
+.player-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: end;
+  padding: 0 0 15px;
+  gap: 16px;
+}
+
+.player-head h1 {
+  margin: 5px 0 0;
+  font-size: 26px;
+  letter-spacing: -0.03em;
+}
+
+.player-head #status {
+  font-size: 10px;
+  letter-spacing: 0.16em;
+  color: #888;
+  font-weight: 800;
+  text-transform: uppercase;
+  transition: color 0.3s var(--ease);
+}
+
+.player-head #status.ready {
+  color: #fff;
+}
+
+.player-head #status.error {
+  color: #ff6b6b;
+}
+
+.frame-wrap {
+  flex: 1;
+  min-height: 0;
+  border: 1px solid var(--dark-line);
+  background: #000;
+  position: relative;
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.frame-wrap iframe {
+  width: 100%;
+  height: 100%;
+  border: 0;
+  background: #fff;
+  display: block;
+}
+
+.load-error {
+  position: absolute;
+  inset: 0;
+  background: #111;
+  display: grid;
+  place-content: center;
+  text-align: center;
+  padding: 20px;
+  gap: 12px;
+}
+
+.load-error[hidden] {
+  display: none;
+}
+
+.load-error h2 {
+  font-size: 22px;
+  letter-spacing: -0.02em;
+  margin: 0;
+}
+
+.load-error p {
+  color: #888;
+  max-width: 420px;
+  line-height: 1.6;
+  margin: 0 auto;
+}
+
+.load-error a {
+  color: #fff;
+  margin-top: 8px;
+  text-decoration: underline;
+}
+
+/* =========================================================
+   ADMIN PAGES
+   ========================================================= */
+.admin {
+  max-width: 760px;
+  margin: 0 auto;
+  padding: 60px 22px;
+}
+
+.admin h1 {
+  font-size: 56px;
+  letter-spacing: -0.07em;
+  margin: 15px 0 35px;
+  line-height: 1.05;
+}
+
+.admin-form {
+  display: grid;
+  gap: 12px;
+}
+
+.admin-form input,
+.admin-form textarea {
+  font: inherit;
+  border: 1px solid var(--line);
+  padding: 15px 16px;
+  background: var(--panel);
+  outline: 0;
+  color: var(--ink);
+  border-radius: 2px;
+  transition: border-color 0.2s var(--ease), box-shadow 0.2s var(--ease);
+}
+
+.admin-form input:focus,
+.admin-form textarea:focus {
+  border-color: var(--ink);
+  box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.06);
+}
+
+.admin-form textarea {
+  min-height: 150px;
+  resize: vertical;
+  font-family: inherit;
+}
+
+.admin-form button {
+  padding: 14px;
+  border: 1px solid #000;
+  background: #000;
+  color: #fff;
+  cursor: pointer;
+  font: inherit;
+  font-weight: 700;
+  border-radius: 2px;
+  transition: background 0.2s var(--ease), transform 0.15s var(--ease);
+}
+
+.admin-form button:hover {
+  background: #222;
+}
+
+.admin-form button:active {
+  transform: scale(0.99);
+}
+
+.admin-form button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.admin-form p#msg {
+  margin: 0;
+  min-height: 20px;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.admin-form p#msg.ok {
+  color: #2e7d32;
+}
+
+.admin-form p#msg.err {
+  color: #c62828;
+}
+
+.hint {
+  font-size: 12px;
+  color: #777;
+  line-height: 1.7;
+  margin-top: 25px;
+}
+
+/* =========================================================
+   KEYFRAMES
+   ========================================================= */
+@keyframes rise {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes pop {
+  from {
+    opacity: 0;
+    transform: scale(0.96) translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* =========================================================
+   RESPONSIVE
+   ========================================================= */
+@media (max-width: 700px) {
+  .nav-actions a {
+    display: none;
+  }
+
+  .hero {
+    min-height: 480px;
+  }
+
+  .hero-mark {
+    display: none;
+  }
+
+  .toolbar {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .search {
+    min-width: 0;
+  }
+
+  .game-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px;
+  }
+
+  .game-card h3 {
+    font-size: 12.5px;
+  }
+
+  .admin h1 {
+    font-size: 42px;
+  }
+
+  .player-head h1 {
+    font-size: 20px;
+  }
+
+  .poll-card,
+  .announcement {
+    padding: 28px 22px;
+  }
+
+  .announcement h2 {
+    font-size: 22px;
+  }
+}
+
+/* =========================================================
+   ACCESSIBILITY
+   ========================================================= */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* =========================================================
+   FOCUS VISIBLE
+   ========================================================= */
+a:focus-visible,
+button:focus-visible,
+input:focus-visible,
+textarea:focus-visible {
+  outline: 2px solid var(--ink);
+  outline-offset: 2px;
+}
+
+.player-page a:focus-visible,
+.player-page button:focus-visible {
+  outline-color: #fff;
+}
